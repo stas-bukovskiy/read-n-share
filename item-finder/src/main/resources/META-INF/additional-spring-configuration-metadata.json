@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "read-n-share.item-finder.imdbToken",
+      "type": "java.lang.String",
+      "description": "Description for read-n-share.item-finder.imdbToken."
+  }
+] }
