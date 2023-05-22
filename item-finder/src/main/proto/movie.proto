@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package service;
+
+option java_multiple_files = true;
+option java_outer_classname = "MovieGrpc";
+
+service MovieService {
+  rpc searchMovieByExpression(SearchRequest) returns (SearchResponse);
+  rpc getMovieByImdbId(GetMovieByImdbIdRequest) returns (GetMovieByImdbIdResponse);
+}
+
+message SearchRequest {
+  string expression = 1;
+}
+
+message SearchResponse {
+  string id = 1;
+  string image = 2;
+  string title = 3;
+  string description = 4;
+}
+
+message GetMovieByImdbIdRequest {
+  string imdbId = 1;
+}
+
+message GetMovieByImdbIdResponse {
+  MovieData movie = 1;
+}
+
+message MovieData {
+  string id = 1;
+  string imdbId = 2;
+
+  string title = 3;
+  string originalTitle = 4;
+  int32 year = 5;
+  int32 runtimeMins = 6;
+  string plot = 7;
+  string imageURL = 8;
+
+  repeated string awards = 9;
+  repeated string genres = 10;
+  repeated string directors = 11;
+  repeated string writers = 12;
+
+  double imdbRating = 13;
+  int32 imDbRatingVotes = 14;
+}
+
