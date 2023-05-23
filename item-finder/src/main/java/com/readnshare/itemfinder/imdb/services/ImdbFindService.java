@@ -1,4 +1,4 @@
-package com.readnshare.itemfinder.imdb.service;
+package com.readnshare.itemfinder.imdb.services;
 
 import com.readnshare.itemfinder.imdb.domain.MovieData;
 import com.readnshare.itemfinder.imdb.domain.SearchData;

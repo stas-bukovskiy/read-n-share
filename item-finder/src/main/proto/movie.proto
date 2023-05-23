@@ -1,7 +1,8 @@
 syntax = "proto3";
 
-package service;
+package com.readnshare.itemfinder.grpc;
 
+option java_package = "com.readnshare.itemfinder.grpc";
 option java_multiple_files = true;
 option java_outer_classname = "MovieGrpc";
 
@@ -15,6 +16,11 @@ message SearchRequest {
 }
 
 message SearchResponse {
+  string expression = 1;
+  repeated SearchResult results = 2;
+}
+
+message SearchResult {
   string id = 1;
   string image = 2;
   string title = 3;

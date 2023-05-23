@@ -1,6 +1,6 @@
 package com.readnshare.itemfinder.conifg;
 
-import com.readnshare.itemfinder.interceptor.LogGrpcInterceptor;
+import com.readnshare.itemfinder.interceptors.LogGrpcInterceptor;
 import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor;
 import org.springframework.context.annotation.Configuration;
 

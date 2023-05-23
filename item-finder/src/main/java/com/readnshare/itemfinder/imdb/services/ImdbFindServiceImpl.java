@@ -1,16 +1,21 @@
-package com.readnshare.itemfinder.imdb.service;
+package com.readnshare.itemfinder.imdb.services;
 
 import com.google.common.base.Strings;
 import com.readnshare.itemfinder.imdb.domain.MovieData;
 import com.readnshare.itemfinder.imdb.domain.SearchData;
-import com.readnshare.itemfinder.imdb.exception.ImdbException;
+import com.readnshare.itemfinder.imdb.exceptions.ImdbException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 public class ImdbFindServiceImpl implements ImdbFindService {
+
+    private static final String SERVICE_NAME = "IMDB_FIND_SERVICE";
+
     private final ImdbProperties properties;
     private final WebClient webClient;
 
