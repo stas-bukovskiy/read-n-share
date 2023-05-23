@@ -15,6 +15,13 @@ message User {
   google.protobuf.Timestamp updated_at = 7;
 }
 
+message Error {
+  string message = 1;
+  string code = 2;
+  string type = 3;
+  string details = 4;
+}
+
 message CreateUserRequest {
   string name = 1;
   string email = 2;
@@ -24,6 +31,7 @@ message CreateUserRequest {
 
 message CreateUserResponse {
   User user = 1;
+  Error error = 3;
 }
 
 message GetUserRequest {
@@ -32,6 +40,7 @@ message GetUserRequest {
 
 message GetUserResponse {
   User user = 1;
+  Error error = 3;
 }
 
 message LoginUserRequest {
@@ -42,6 +51,7 @@ message LoginUserRequest {
 message LoginUserResponse {
   User user = 1;
   string token = 2;
+  Error error = 3;
 }
 
 message VerifyUserRequest {
@@ -50,6 +60,7 @@ message VerifyUserRequest {
 
 message VerifyUserResponse {
   User user = 1;
+  Error error = 3;
 }
 
 service UserService {
