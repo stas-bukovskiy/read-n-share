@@ -6,6 +6,7 @@ import (
 	pb "github.com/stas-bukovskiy/read-n-share/user-service/internal/controller/grpc"
 	"github.com/stas-bukovskiy/read-n-share/user-service/internal/service"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
@@ -87,6 +88,9 @@ func (m *MongoDB) GetUser(filter *service.GetUserFilter) (*pb.User, error) {
 	user := &userDTO{}
 	err := m.DB.Collection("user").FindOne(context.TODO(), filterStmt).Decode(user)
 	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
 		return nil, err
 	}
 
