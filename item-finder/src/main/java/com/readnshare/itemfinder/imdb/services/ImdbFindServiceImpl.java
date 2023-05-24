@@ -36,9 +36,14 @@ public class ImdbFindServiceImpl implements ImdbFindService {
                 .retrieve()
                 .bodyToMono(SearchData.class)
                 .handle((searchResult, sink) -> {
-                    if (StringUtils.hasText(searchResult.getErrorMessage()))
+                    if (StringUtils.hasText(searchResult.getErrorMessage())) {
+                        log.error("[{}] error occurred during searching by expression <{}>: {}", SERVICE_NAME, expression, searchResult.getErrorMessage());
                         sink.error(new ImdbException(searchResult.getErrorMessage()));
-                    else sink.next(searchResult);
+                    }
+                    else {
+                        log.debug("[{}]successfully search by expression <{}>: {}", SERVICE_NAME, expression, searchResult);
+                        sink.next(searchResult);
+                    }
                 });
     }
 
@@ -56,9 +61,17 @@ public class ImdbFindServiceImpl implements ImdbFindService {
                 .retrieve()
                 .bodyToMono(MovieData.class)
                 .handle((searchResult, sink) -> {
-                    if (StringUtils.hasText(searchResult.getErrorMessage()))
+                    if (StringUtils.hasText(searchResult.getErrorMessage())) {
+                        log.error("[{}] error occurred during searching by imdbId <{}>: {}", SERVICE_NAME, imdbId, searchResult.getErrorMessage());
                         sink.error(new ImdbException(searchResult.getErrorMessage()));
-                    else sink.next(searchResult);
+                    }
+                    else {
+                        log.debug("[{}]successfully search by imdbId <{}>: {}", SERVICE_NAME, imdbId, searchResult);
+                        sink.next(searchResult);
+                    }
                 });
     }
+
+
 }
+

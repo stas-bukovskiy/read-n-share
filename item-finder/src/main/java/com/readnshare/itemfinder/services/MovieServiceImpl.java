@@ -26,8 +26,8 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public Mono<SearchData> searchMovieByExpression(String expression) {
         return imdbFindService.search(expression)
-                .doOnSuccess(searchData -> log.debug("{} search result: {}", SERVICE_NAME, searchData))
-                .doOnError(error -> log.error("{} error occurred during movie searching", SERVICE_NAME, error));
+                .doOnSuccess(searchData -> log.debug("[{}] search result: {}", SERVICE_NAME, searchData))
+                .doOnError(error -> log.error("[{}] error occurred during movie searching", SERVICE_NAME, error));
     }
 
     @Override
@@ -37,9 +37,9 @@ public class MovieServiceImpl implements MovieService {
                 .switchIfEmpty(imdbFindService.getMovieInfo(imdbId)
                         .map(MovieMapper::of)
                         .flatMap(movieRepository::save)
-                        .doOnSuccess(searchData -> log.debug("{} movie saved: {}", SERVICE_NAME, searchData))
-                        .doOnError(error -> log.error("{} error occurred during movie saving", SERVICE_NAME, error)))
-                .doOnSuccess(searchData -> log.debug("{} movie found by id <{}>: {}", SERVICE_NAME, imdbId, searchData))
-                .doOnError(error -> log.error("{} error occurred during movie finding by id <{}>", SERVICE_NAME, imdbId, error));
+                        .doOnSuccess(searchData -> log.debug("[{}] movie saved: {}", SERVICE_NAME, searchData))
+                        .doOnError(error -> log.error("[{}] error occurred during movie saving", SERVICE_NAME, error)))
+                .doOnSuccess(searchData -> log.debug("[{}] movie found by id <{}>: {}", SERVICE_NAME, imdbId, searchData))
+                .doOnError(error -> log.error("[{}] error occurred during movie finding by id <{}>", SERVICE_NAME, imdbId, error));
     }
 }

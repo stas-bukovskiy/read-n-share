@@ -33,6 +33,7 @@ public final class MovieMapper {
     public static GetMovieByImdbIdResponse toGRPC(Movie movie) {
         return GetMovieByImdbIdResponse.newBuilder()
                 .setMovie(com.readnshare.itemfinder.grpc.MovieData.newBuilder()
+                        .setId(movie.getId())
                         .setImdbId(movie.getId())
                         .setTitle(movie.getTitle())
                         .setOriginalTitle(movie.getOriginalTitle())
