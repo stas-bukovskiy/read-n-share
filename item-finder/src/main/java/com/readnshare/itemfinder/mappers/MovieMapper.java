@@ -2,8 +2,8 @@ package com.readnshare.itemfinder.mappers;
 
 import com.readnshare.itemfinder.domain.Movie;
 import com.readnshare.itemfinder.dto.MovieDto;
-import com.readnshare.itemfinder.grpc.GetMovieByImdbIdResponse;
 import com.readnshare.itemfinder.imdb.domain.MovieData;
+import v1.GetMovieByImdbIdResponse;
 
 import static com.readnshare.itemfinder.utils.ParseUtil.*;
 
@@ -32,7 +32,7 @@ public final class MovieMapper {
 
     public static GetMovieByImdbIdResponse toGRPC(Movie movie) {
         return GetMovieByImdbIdResponse.newBuilder()
-                .setMovie(com.readnshare.itemfinder.grpc.MovieData.newBuilder()
+                .setMovie(v1.MovieData.newBuilder()
                         .setId(movie.getId())
                         .setImdbId(movie.getId())
                         .setTitle(movie.getTitle())

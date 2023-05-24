@@ -6,8 +6,6 @@ import io.grpc.StatusException;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.advice.GrpcAdvice;
 import net.devh.boot.grpc.server.advice.GrpcExceptionHandler;
-import org.springframework.dao.DataAccessException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 
 @GrpcAdvice

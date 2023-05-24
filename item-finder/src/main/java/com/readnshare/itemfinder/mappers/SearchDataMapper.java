@@ -2,9 +2,9 @@ package com.readnshare.itemfinder.mappers;
 
 import com.readnshare.itemfinder.dto.SearchDataDto;
 import com.readnshare.itemfinder.dto.SearchResultDto;
-import com.readnshare.itemfinder.grpc.SearchResponse;
-import com.readnshare.itemfinder.grpc.SearchResult;
 import com.readnshare.itemfinder.imdb.domain.SearchData;
+import v1.SearchResponse;
+import v1.SearchResult;
 
 public final class SearchDataMapper {
 
