@@ -26,8 +26,10 @@ type (
 	}
 
 	AWS struct {
-		S3Bucket string `env:"BOOKS_AWS_S3_BUCKET" env-default:"read-n-share-books-bucket"`
-		Region   string `env:"BOOKS_AWS_REGION" env-default:"us-east-1"`
+		S3Bucket           string `env:"BOOKS_AWS_S3_BUCKET" env-default:"read-n-share-books-bucket"`
+		Region             string `env:"BOOKS_AWS_REGION" env-default:"us-east-1"`
+		IAMUserAccessToken string `env:"BOOKS_AWS_IAM_USER_ACCESS_TOKEN" env-default:""`
+		IAMUserSecretKey   string `env:"BOOKS_AWS_IAM_USER_SECRET_KEY" env-default:""`
 	}
 
 	MongoDB struct {

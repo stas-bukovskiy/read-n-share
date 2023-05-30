@@ -30,8 +30,8 @@ func New(cfg *config.Config, logger logging.Logger) *awsS3 {
 		Region: aws.String(cfg.AWS.Region),
 		Credentials: credentials.NewCredentials(&credentials.StaticProvider{
 			Value: credentials.Value{
-				AccessKeyID:     "AKIAX3DUFRKCDNVSMK4C",
-				SecretAccessKey: "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",
+				AccessKeyID:     cfg.AWS.IAMUserAccessToken,
+				SecretAccessKey: cfg.AWS.IAMUserSecretKey,
 			},
 		}),
 	}))
