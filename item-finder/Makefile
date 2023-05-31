@@ -1,8 +1,12 @@
 include .env
 
+build: clean proto-gen jar-gen
+
+docker-build:
+	docker buildx build -t item-finder .
+
 run: docker-run
 
-build: clean proto-gen jar-gen docker-build
 
 clean:
 	./gradlew clean
@@ -12,9 +16,6 @@ proto-gen:
 
 jar-gen:
 	./gradlew bootjar
-
-docker-build:
-	docker build -t item-finder .
 
 docker-run:
 	docker run -p ${GRPC_SERVER_PORT}:${GRPC_SERVER_PORT} \
