@@ -1,5 +1,7 @@
 package com.readnshare.itemfinder.delivery.grpc;
 
+import com.readnshare.itemfinder.googlebooks.exceptions.GoogleBookException;
+import com.readnshare.itemfinder.googlebooks.exceptions.GoogleBookNotFoundException;
 import com.readnshare.itemfinder.imdb.exceptions.ImdbException;
 import io.grpc.Status;
 import io.grpc.StatusException;
@@ -34,5 +36,20 @@ public class GrpcExceptionAdvice {
         var status = Status.INVALID_ARGUMENT.withDescription(ex.getLocalizedMessage()).withCause(ex);
         log.error("[{}] IllegalArgumentException: ", SERVICE_NAME, ex);
         return status.asException();
+    }
+
+    @GrpcExceptionHandler(value = {GoogleBookNotFoundException.class})
+    public StatusException handleGoogleBookNotFoundException(GoogleBookNotFoundException ex) {
+        var status = Status.NOT_FOUND.withDescription(ex.getLocalizedMessage()).withCause(ex);
+        log.error("[{}] GoogleBookNotFoundException: ", SERVICE_NAME, ex);
+        return status.asException();
+    }
+
+    @GrpcExceptionHandler(value = {GoogleBookException.class})
+    public StatusException handleGoogleBookException(GoogleBookException ex) {
+        var status = Status.INTERNAL.withDescription(ex.getLocalizedMessage()).withCause(ex);
+        log.error("[{}] GoogleBookException: ", SERVICE_NAME, ex);
+        return status.asException();
+
     }
 }

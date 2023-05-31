@@ -1,9 +1,9 @@
 package com.readnshare.itemfinder.delivery.http;
 
 import com.readnshare.itemfinder.dto.MovieDto;
-import com.readnshare.itemfinder.dto.SearchDataDto;
+import com.readnshare.itemfinder.dto.MovieSearchDataDto;
 import com.readnshare.itemfinder.mappers.MovieMapper;
-import com.readnshare.itemfinder.mappers.SearchDataMapper;
+import com.readnshare.itemfinder.mappers.MovieSearchDataMapper;
 import com.readnshare.itemfinder.services.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,9 +32,9 @@ public class MovieController {
             operationId = "searchMoviesByExpression",
             description = "Search movies and series by given expression that encounters in titles")
     @GetMapping(path = "search/{expression}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Mono<ResponseEntity<SearchDataDto>> searchMoviesByExpression(@PathVariable String expression) {
+    public Mono<ResponseEntity<MovieSearchDataDto>> searchMoviesByExpression(@PathVariable String expression) {
         return movieService.searchMovieByExpression(expression)
-                .map(searchData -> ResponseEntity.ok(SearchDataMapper.toDto(searchData)));
+                .map(searchData -> ResponseEntity.ok(MovieSearchDataMapper.toDto(searchData)));
     }
 
     @Operation(method = "getMovieByImdbId",

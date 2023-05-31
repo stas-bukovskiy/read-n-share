@@ -5,8 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SearchData {
+public class MovieSearchData {
     public String expression;
-    private List<SearchResult> results;
+    private List<MovieSearchResult> results;
     private String errorMessage;
 }

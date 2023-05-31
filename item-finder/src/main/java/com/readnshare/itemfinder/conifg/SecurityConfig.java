@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.security.authentication.BearerAuthenticationReader;
 import net.devh.boot.grpc.server.security.authentication.CompositeGrpcAuthenticationReader;
 import net.devh.boot.grpc.server.security.authentication.GrpcAuthenticationReader;
-import net.devh.boot.grpc.server.security.check.AccessPredicate;
-import net.devh.boot.grpc.server.security.check.GrpcSecurityMetadataSource;
-import net.devh.boot.grpc.server.security.check.ManualGrpcSecurityMetadataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -18,7 +15,6 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import reactor.core.publisher.Mono;
-import v1.MovieServiceGrpc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +28,20 @@ public class SecurityConfig {
     private final ReactiveAuthenticationManager authenticationManager;
     private final ServerSecurityContextRepository securityContextRepository;
 
+    private static final String[] AUTH_WHITELIST = {
+            // -- Swagger UI v2
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+    };
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
@@ -41,6 +51,7 @@ public class SecurityConfig {
                 .authenticationManager(authenticationManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
+                .pathMatchers(AUTH_WHITELIST).permitAll()
                 .pathMatchers("/**").authenticated()
                 .and()
                 .exceptionHandling()
@@ -56,15 +67,6 @@ public class SecurityConfig {
                 accessToken, accessToken
         )));
         return new CompositeGrpcAuthenticationReader(readers);
-    }
-
-    @Bean
-    GrpcSecurityMetadataSource grpcSecurityMetadataSource() {
-        final ManualGrpcSecurityMetadataSource source = new ManualGrpcSecurityMetadataSource();
-        source.set(MovieServiceGrpc.getSearchMovieByExpressionMethod(), AccessPredicate.authenticated());
-        source.set(MovieServiceGrpc.getGetMovieByImdbIdMethod(), AccessPredicate.authenticated());
-        source.setDefault(AccessPredicate.denyAll());
-        return source;
     }
 
 }

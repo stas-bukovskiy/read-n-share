@@ -3,8 +3,8 @@ package com.readnshare.itemfinder.dto;
 import lombok.Builder;
 
 @Builder
-public record SearchResultDto(
-        String id,
+public record MovieSearchResultDto(
+        String imdbId,
         String image,
         String title,
         String description

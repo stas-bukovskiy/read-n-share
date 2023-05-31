@@ -5,9 +5,9 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record SearchDataDto(
+public record MovieSearchDataDto(
         String expression,
-        List<SearchResultDto> results
+        List<MovieSearchResultDto> results
 ) {
 
 }

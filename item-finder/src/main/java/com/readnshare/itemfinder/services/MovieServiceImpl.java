@@ -1,7 +1,7 @@
 package com.readnshare.itemfinder.services;
 
 import com.readnshare.itemfinder.domain.Movie;
-import com.readnshare.itemfinder.imdb.domain.SearchData;
+import com.readnshare.itemfinder.imdb.domain.MovieSearchData;
 import com.readnshare.itemfinder.imdb.services.ImdbFindService;
 import com.readnshare.itemfinder.mappers.MovieMapper;
 import com.readnshare.itemfinder.repositories.MovieRepository;
@@ -24,7 +24,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public Mono<SearchData> searchMovieByExpression(String expression) {
+    public Mono<MovieSearchData> searchMovieByExpression(String expression) {
         return imdbFindService.search(expression)
                 .doOnSuccess(searchData -> log.debug("[{}] search result: {}", SERVICE_NAME, searchData))
                 .doOnError(error -> log.error("[{}] error occurred during movie searching", SERVICE_NAME, error));

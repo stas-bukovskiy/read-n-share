@@ -2,7 +2,7 @@ package com.readnshare.itemfinder.imdb.services;
 
 import com.google.common.base.Strings;
 import com.readnshare.itemfinder.imdb.domain.MovieData;
-import com.readnshare.itemfinder.imdb.domain.SearchData;
+import com.readnshare.itemfinder.imdb.domain.MovieSearchData;
 import com.readnshare.itemfinder.imdb.exceptions.ImdbException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class ImdbFindServiceImpl implements ImdbFindService {
     }
 
     @Override
-    public Mono<SearchData> search(String expression) {
+    public Mono<MovieSearchData> search(String expression) {
         if (Strings.isNullOrEmpty(expression))
             return Mono.error(new IllegalArgumentException("expression can not be blank"));
 
@@ -34,7 +34,7 @@ public class ImdbFindServiceImpl implements ImdbFindService {
                 .get()
                 .uri(searchURL, properties.getImdbToken(), expression)
                 .retrieve()
-                .bodyToMono(SearchData.class)
+                .bodyToMono(MovieSearchData.class)
                 .handle((searchResult, sink) -> {
                     if (StringUtils.hasText(searchResult.getErrorMessage())) {
                         log.error("[{}] error occurred during searching by expression <{}>: {}", SERVICE_NAME, expression, searchResult.getErrorMessage());

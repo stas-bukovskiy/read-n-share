@@ -7,20 +7,20 @@ option java_multiple_files = true;
 option java_outer_classname = "MovieGrpc";
 
 service MovieService {
-  rpc searchMovieByExpression(SearchRequest) returns (SearchResponse);
+  rpc searchMoviesByExpression(MovieSearchRequest) returns (MovieSearchResponse);
   rpc getMovieByImdbId(GetMovieByImdbIdRequest) returns (GetMovieByImdbIdResponse);
 }
 
-message SearchRequest {
+message MovieSearchRequest {
   string expression = 1;
 }
 
-message SearchResponse {
+message MovieSearchResponse {
   string expression = 1;
-  repeated SearchResult results = 2;
+  repeated MovieSearchResult results = 2;
 }
 
-message SearchResult {
+message MovieSearchResult {
   string id = 1;
   string image = 2;
   string title = 3;
