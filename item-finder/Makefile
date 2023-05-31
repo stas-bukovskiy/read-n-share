@@ -7,6 +7,9 @@ docker-build:
 
 run: docker-run
 
+local:
+	@echo Starting local docker compose
+	docker-compose -f docker-compose.local.yaml up -d --build
 
 clean:
 	./gradlew clean
