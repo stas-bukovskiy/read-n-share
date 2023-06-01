@@ -9,6 +9,7 @@ option java_outer_classname = "BookGrpc";
 service BookService {
   rpc searchBooksByExpression(BookSearchRequest) returns (BookSearchResponse);
   rpc getBookByGoogleBooksId(GetBookByGoogleBooksIdRequest) returns (GetBookByGoogleBooksIdResponse);
+  rpc verifyGoogleBookIds(VerifyGoogleBookIdsRequest) returns (VerifyGoogleBookIdsResponse);
 }
 
 message BookSearchRequest {
@@ -67,3 +68,10 @@ message BookData {
   string language = 13;
 }
 
+message VerifyGoogleBookIdsRequest {
+  repeated string googleBookIds = 1;
+}
+
+message VerifyGoogleBookIdsResponse {
+  repeated BookData verifiedBooks = 1;
+}
