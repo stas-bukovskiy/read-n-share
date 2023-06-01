@@ -8,8 +8,13 @@ import com.readnshare.itemfinder.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
+import java.util.List;
 
 
 @Service
@@ -31,7 +36,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Mono<Movie> getMovieByImdbId(String imdbId) {
         return movieRepository.findByImdbId(imdbId)
                 .switchIfEmpty(imdbFindService.getMovieInfo(imdbId)
@@ -42,4 +47,13 @@ public class MovieServiceImpl implements MovieService {
                 .doOnSuccess(searchData -> log.debug("[{}] movie found by id <{}>: {}", SERVICE_NAME, imdbId, searchData))
                 .doOnError(error -> log.error("[{}] error occurred during movie finding by id <{}>", SERVICE_NAME, imdbId, error));
     }
+
+    @Override
+    @Transactional
+    public Flux<Movie> getMovieByImdbIds(List<String> imdbIds) {
+        return Flux.fromIterable(imdbIds)
+                .flatMap(imdbId -> getMovieByImdbId(imdbId)
+                        .subscribeOn(Schedulers.boundedElastic()));
+    }
+
 }

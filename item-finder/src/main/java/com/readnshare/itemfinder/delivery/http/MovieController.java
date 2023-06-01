@@ -12,11 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -45,6 +44,18 @@ public class MovieController {
     public Mono<ResponseEntity<MovieDto>> getMovieByImdbId(@PathVariable String imdbId) {
         return movieService.getMovieByImdbId(imdbId)
                 .map(searchData -> ResponseEntity.ok(MovieMapper.toDto(searchData)));
+    }
+
+    @Operation(method = "verifyImdbIds",
+            summary = "Verify IMDb Ids and get movies",
+            operationId = "verifyImdbIds",
+            description = "Verify IMDb Ids and get movies if all ids are valid")
+    @GetMapping("/verify")
+    private Mono<ResponseEntity<List<MovieDto>>> verifyImdbIds(@RequestParam List<String> imdbIds) {
+        return movieService.getMovieByImdbIds(imdbIds)
+                .map(MovieMapper::toDto)
+                .collectList()
+                .map(ResponseEntity::ok);
     }
 
 

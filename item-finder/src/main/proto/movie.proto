@@ -9,6 +9,7 @@ option java_outer_classname = "MovieGrpc";
 service MovieService {
   rpc searchMoviesByExpression(MovieSearchRequest) returns (MovieSearchResponse);
   rpc getMovieByImdbId(GetMovieByImdbIdRequest) returns (GetMovieByImdbIdResponse);
+  rpc verifyImdbIds(VerifyImdbIdsRequest) returns (VerifyImdbIdsResponse);
 }
 
 message MovieSearchRequest {
@@ -55,3 +56,11 @@ message MovieData {
   int32 imDbRatingVotes = 14;
 }
 
+
+message VerifyImdbIdsRequest {
+  repeated string imdbIds = 1;
+}
+
+message VerifyImdbIdsResponse {
+  MovieData verifiedMovies = 1;
+}

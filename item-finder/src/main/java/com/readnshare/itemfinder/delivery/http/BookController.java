@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping(path = "/api/v1/book")
@@ -46,6 +48,18 @@ public class BookController {
     public Mono<ResponseEntity<BookDto>> getBooksByGoogleBookId(@PathVariable String googleBookId) {
         return bookService.getBookByGoogleId(googleBookId)
                 .map(searchData -> ResponseEntity.ok(BookMapper.toDto(searchData)));
+    }
+
+    @Operation(method = "verifyGoogleBooksIds",
+            summary = "Verify Google Book Ids and get books",
+            operationId = "verifyGoogleBooksIds",
+            description = "Verify Google Book Ids and get books if all ids are valid")
+    @GetMapping("/verify")
+    private Mono<ResponseEntity<List<BookDto>>> verifyGoogleBooksIds(@RequestParam List<String> googleBooksIds) {
+        return bookService.getBookByGoogleIds(googleBooksIds)
+                .map(BookMapper::toDto)
+                .collectList()
+                .map(ResponseEntity::ok);
     }
 
 

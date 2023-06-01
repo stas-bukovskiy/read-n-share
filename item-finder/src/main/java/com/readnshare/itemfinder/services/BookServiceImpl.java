@@ -8,7 +8,13 @@ import com.readnshare.itemfinder.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,6 +27,7 @@ public class BookServiceImpl implements BookService {
     private final GoogleBookFindService findService;
 
     @Override
+    @Transactional
     public Mono<BookSearchData> searchBookByExpression(String expression, GoogleBookFindService.BookSearchOrder searchOrder, int startIndex, int maxResults) {
         return findService.search(expression, searchOrder, startIndex, maxResults)
                 .doOnSuccess(searchData -> log.debug("[{}] search result: {}", SERVICE_NAME, searchData))
@@ -29,6 +36,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Mono<Book> getBookByGoogleId(String googleBookId) {
         return bookRepository.findByGoogleBookId(googleBookId)
                 .switchIfEmpty(findService.getBookInfo(googleBookId)
@@ -39,5 +47,13 @@ public class BookServiceImpl implements BookService {
                 .doOnSuccess(searchData -> log.debug("[{}] book found by id <{}>: {}", SERVICE_NAME, googleBookId, searchData))
                 .doOnError(error -> log.error("[{}] error occurred during book finding by id <{}>", SERVICE_NAME, googleBookId, error));
 
+    }
+
+    @Override
+    @Transactional
+    public Flux<Book> getBookByGoogleIds(List<String> googleBookIds) {
+        return Flux.fromIterable(googleBookIds)
+                .flatMap(googleBookId -> getBookByGoogleId(googleBookId)
+                        .subscribeOn(Schedulers.boundedElastic()));
     }
 }
