@@ -62,5 +62,5 @@ message VerifyImdbIdsRequest {
 }
 
 message VerifyImdbIdsResponse {
-  MovieData verifiedMovies = 1;
+  repeated MovieData verifiedMovies = 1;
 }
