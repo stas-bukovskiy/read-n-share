@@ -6,6 +6,7 @@ import com.readnshare.itemfinder.imdb.domain.MovieData;
 import v1.GetMovieByImdbIdResponse;
 
 import static com.readnshare.itemfinder.utils.ParseUtil.*;
+import static com.readnshare.itemfinder.utils.WrappersUtil.getOrDefaultValue;
 
 public final class MovieMapper {
 
@@ -36,17 +37,17 @@ public final class MovieMapper {
                         .setId(movie.getId())
                         .setImdbId(movie.getId())
                         .setTitle(movie.getTitle())
-                        .setOriginalTitle(movie.getOriginalTitle())
-                        .setYear(movie.getYear())
-                        .setRuntimeMins(movie.getRuntimeMins())
-                        .setPlot(movie.getPlot())
-                        .setImageURL(movie.getImageURL())
+                        .setOriginalTitle(getOrDefaultValue(movie.getOriginalTitle()))
+                        .setYear(getOrDefaultValue(movie.getYear()))
+                        .setRuntimeMins(getOrDefaultValue(movie.getRuntimeMins()))
+                        .setPlot(getOrDefaultValue(movie.getPlot()))
+                        .setImageURL(getOrDefaultValue(movie.getImageURL()))
                         .addAllAwards(movie.getAwards())
                         .addAllGenres(movie.getGenres())
                         .addAllDirectors(movie.getDirectors())
                         .addAllWriters(movie.getWriters())
-                        .setImdbRating(movie.getImdbRating())
-                        .setImDbRatingVotes(movie.getImdbRatingVotes())
+                        .setImdbRating(getOrDefaultValue(movie.getImdbRating()))
+                        .setImDbRatingVotes(getOrDefaultValue(movie.getImdbRatingVotes()))
                         .build())
                 .build();
     }
