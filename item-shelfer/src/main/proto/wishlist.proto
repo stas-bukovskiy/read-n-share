@@ -1,0 +1,99 @@
+syntax = "proto3";
+package v1;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+
+option java_package = "v1";
+option java_multiple_files = true;
+
+service WishlistService {
+  rpc createWishlist(CreateWishlistRequest) returns(Wishlist);
+  rpc updateWishlist(UpdateWishlistRequest) returns(Wishlist);
+  rpc deleteWishlist(DeleteWishlistRequest) returns(Wishlist);
+  rpc getAccessRights(GetAccessRightsRequest) returns(AccessRightsResponse);
+  rpc addAccessRight(AddAccessRightRequest) returns(AccessRightsResponse);
+  rpc deleteAccessRight(DeleteAccessRightsRequest) returns(AccessRightsResponse);
+
+  rpc getBookWishlists(google.protobuf.Empty) returns(GetWishlistsResponse);
+  rpc getMovieWishlists(google.protobuf.Empty) returns(GetWishlistsResponse);
+
+  rpc getSharedWithMeWishlists(google.protobuf.Empty) returns(GetWishlistsResponse);
+}
+
+message CreateWishlistRequest {
+  string title = 1;
+  string description = 2;
+  repeated string itemIds = 3;
+  ItemType type = 4;
+  WishlistType wishlistType = 5;
+}
+
+message UpdateWishlistRequest {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string itemIds = 4;
+  WishlistType wishlistType = 5;
+}
+
+message DeleteWishlistRequest {
+  string id = 1;
+}
+
+message Wishlist {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  repeated string itemIds = 4;
+  ItemType itemType = 5;
+  WishlistType wishlistType = 6;
+  Permission permission = 7;
+  google.protobuf.Timestamp createdAt = 8;
+  google.protobuf.Timestamp updatedAt = 9;
+}
+
+enum ItemType {
+  BOOK = 0;
+  MOVIE = 1;
+}
+
+enum WishlistType {
+  PRIVATE = 0;
+  PUBLIC = 1;
+}
+
+enum Permission {
+  READ = 0;
+  MODIFY = 1;
+  OWNER = 2;
+}
+
+message GetWishlistsResponse {
+  repeated Wishlist wishlists = 1;
+}
+
+message AccessRightsResponse {
+  string wishlistId = 1;
+  repeated AccessRight rights = 2;
+}
+
+message AccessRight {
+  string userId = 1;
+  Permission permission = 2;
+}
+
+message GetAccessRightsRequest {
+  string wishlistId = 1;
+}
+
+message AddAccessRightRequest {
+  string wishlistId = 1;
+  AccessRight rightToAdd = 2;
+}
+
+message DeleteAccessRightsRequest {
+  string wishlistId = 1;
+  AccessRight rightToDelete = 2;
+}
