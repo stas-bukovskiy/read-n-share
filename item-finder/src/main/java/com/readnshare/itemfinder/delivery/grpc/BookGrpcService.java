@@ -31,4 +31,14 @@ public class BookGrpcService extends ReactorBookServiceGrpc.BookServiceImplBase 
                 .map(BookMapper::toGRPC);
     }
 
+    @Override
+    public Mono<VerifyGoogleBookIdsResponse> verifyGoogleBookIds(VerifyGoogleBookIdsRequest request) {
+        return service.getBookByGoogleIds(request.getGoogleBookIdsList())
+                .map(BookMapper::toGRPC)
+                .map(GetBookByGoogleBooksIdResponse::getBook)
+                .collectList()
+                .map(verifiedBooks -> VerifyGoogleBookIdsResponse.newBuilder()
+                        .addAllVerifiedBooks(verifiedBooks)
+                        .build());
+    }
 }

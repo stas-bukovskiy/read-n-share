@@ -27,4 +27,14 @@ public class MovieGrpcService extends ReactorMovieServiceGrpc.MovieServiceImplBa
                 .map(MovieMapper::toGRPC);
     }
 
+    @Override
+    public Mono<VerifyImdbIdsResponse> verifyImdbIds(VerifyImdbIdsRequest request) {
+        return service.getMovieByImdbIds(request.getImdbIdsList())
+                .map(MovieMapper::toGRPC)
+                .map(GetMovieByImdbIdResponse::getMovie)
+                .collectList()
+                .map(verifiedMovies -> VerifyImdbIdsResponse.newBuilder()
+                        .addAllVerifiedMovies(verifiedMovies)
+                        .build());
+    }
 }
