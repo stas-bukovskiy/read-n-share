@@ -5,6 +5,8 @@ import com.readnshare.itemfinder.dto.BookDto;
 import com.readnshare.itemfinder.googlebooks.domain.BookData;
 import v1.GetBookByGoogleBooksIdResponse;
 
+import static com.readnshare.itemfinder.utils.WrappersUtil.getOrDefaultValue;
+
 public final class BookMapper {
     private BookMapper() {
     }
@@ -50,16 +52,16 @@ public final class BookMapper {
                         .setId(book.getId())
                         .setGoogleBookId(book.getGoogleBookId())
                         .setTitle(book.getTitle())
-                        .setSubtitle(book.getSubtitle())
+                        .setSubtitle(getOrDefaultValue(book.getSubtitle()))
                         .addAllAuthors(book.getAuthors())
-                        .setPublishedDate(book.getPublishedDate())
+                        .setPublishedDate(getOrDefaultValue(book.getPublishedDate()))
                         .addAllCategories(book.getCategories())
-                        .setDescription(book.getDescription())
+                        .setDescription(getOrDefaultValue(book.getDescription()))
                         .putAllImageLinks(book.getImageLinks())
-                        .setPageCount(book.getPageCount())
-                        .setAverageRating(book.getAverageRating())
-                        .setRatingsCount(book.getRatingsCount())
-                        .setLanguage(book.getLanguage())
+                        .setPageCount(getOrDefaultValue(book.getPageCount()))
+                        .setAverageRating(getOrDefaultValue(book.getAverageRating()))
+                        .setRatingsCount(getOrDefaultValue(book.getRatingsCount()))
+                        .setLanguage(getOrDefaultValue(book.getLanguage()))
                         .build()
                 ).build();
 
