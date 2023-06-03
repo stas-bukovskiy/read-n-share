@@ -5,6 +5,7 @@ import com.readnshare.itemfinder.googlebooks.domain.BookData;
 import com.readnshare.itemfinder.googlebooks.domain.BookSearchData;
 import com.readnshare.itemfinder.googlebooks.exceptions.GoogleBookNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -57,7 +58,7 @@ public class GoogleBookFindServiceImpl implements GoogleBookFindService {
         return webClient.get()
                 .uri(url)
                 .retrieve()
-                .onStatus(httpStatusCode -> httpStatusCode.value() == 404, (response) -> Mono.error(new GoogleBookNotFoundException(bookId)))
+                .onStatus(this::isNotFoundStatus, (response) -> Mono.error(new GoogleBookNotFoundException(bookId)))
                 .bodyToMono(BookData.class)
                 .doOnSuccess(searchData -> log.debug("[{}] book found by id <{}>: {}", SERVICE_NAME, bookId, searchData))
                 .doOnError(error -> log.error("[{}] error occurred during book finding by id <{}>", SERVICE_NAME, bookId, error));
@@ -71,6 +72,10 @@ public class GoogleBookFindServiceImpl implements GoogleBookFindService {
                 .queryParam("maxResults", maxResults)
                 .build()
                 .toUriString();
+    }
+
+    private boolean isNotFoundStatus(HttpStatusCode httpStatusCode) {
+        return httpStatusCode.value() == 404 || httpStatusCode.value() == 503;
     }
 
 }
