@@ -1,5 +1,6 @@
 package com.readnshare.itemfinder.services;
 
+import com.google.common.base.Strings;
 import com.readnshare.itemfinder.exceptions.ClientVerifyingException;
 import com.readnshare.itemfinder.exceptions.ServerVerifyingException;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,8 @@ public class VerifyUserServiceImpl implements VerifyUserService {
 
     @Override
     public Mono<VerifyUserResponse> verify(String token) {
+        if (Strings.isNullOrEmpty(token))
+            return Mono.error(new ClientVerifyingException("Bearer token cannot be null or empty"));
         VerifyUserRequest request = VerifyUserRequest.newBuilder().setToken(token).build();
         return userServiceStub.verifyUser(request)
                 .handle((verifyUserResponse, sink) -> {
