@@ -9,9 +9,9 @@ const token = localStorage.getItem('token');
 function UploadBook() {
 
   const navigation = useNavigate();
-  if (!token) {
-    navigation('/login');
-  }
+  // if (!token) {
+  //   navigation('/login');
+  // }
 
   const [message, setMessage] = useState(null);
   const [messageStatus, setMessageStatus] = useState(null);

@@ -1,25 +1,21 @@
 package app
 
 import (
-	"fmt"
 	"github.com/stas-bukovskiy/read-n-share/user-service/config"
-	pb1 "github.com/stas-bukovskiy/read-n-share/user-service/internal/controller/grpc"
+	httpcontroller "github.com/stas-bukovskiy/read-n-share/user-service/internal/controller/http"
 	"github.com/stas-bukovskiy/read-n-share/user-service/internal/service"
 	"github.com/stas-bukovskiy/read-n-share/user-service/internal/storage"
-	"google.golang.org/grpc"
+	"github.com/stas-bukovskiy/read-n-share/user-service/pkg/httpserver"
+	"github.com/stas-bukovskiy/read-n-share/user-service/pkg/logging"
 	"log"
-	"net"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func Run(cfg *config.Config) {
-	log.Printf("Listening on %s:%s", cfg.Host, cfg.Port)
-	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", cfg.Host, cfg.Port))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
+	logger := logging.New("INFO")
 
 	userStorage, err := storage.NewMongoDB(storage.MongoDBConfig{
 		URI:      cfg.MongoDB.URI,
@@ -28,23 +24,37 @@ func Run(cfg *config.Config) {
 	if err != nil {
 		log.Fatalf("failed to connect to mongodb: %v", err)
 	}
+	logger.Info("Connected to MongoDB")
 
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
-	pb1.RegisterUserServiceServer(grpcServer,
-		service.NewUserService(&service.Options{
-			Config:  cfg,
-			Storage: userStorage,
-		},
-		))
+	storages := service.Storages{
+		User: userStorage,
+	}
 
-	go func() {
-		log.Println("Starting gRPC server")
-		err = grpcServer.Serve(lis)
-		if err != nil {
-			return
-		}
-	}()
+	servicesOptions := service.Options{
+		Storages: storages,
+		Logger:   logger,
+		Config:   cfg,
+	}
+
+	services := service.Services{
+		Auth: service.NewAuthService(&servicesOptions),
+		User: service.NewUserService(&servicesOptions),
+	}
+
+	handler := httpcontroller.New(httpcontroller.Options{
+		Config:   cfg,
+		Logger:   logger,
+		Services: services,
+	})
+
+	// init and run http server
+	httpServer := httpserver.New(
+		handler,
+		httpserver.Port(cfg.App.Port),
+		httpserver.ReadTimeout(time.Second*60),
+		httpserver.WriteTimeout(time.Second*60),
+		httpserver.ShutdownTimeout(time.Second*30),
+	)
 
 	// Waiting signal
 	interrupt := make(chan os.Signal, 1)
@@ -53,7 +63,13 @@ func Run(cfg *config.Config) {
 	select {
 	case s := <-interrupt:
 		log.Println("app - Run - signal: " + s.String())
+	case err = <-httpServer.Notify():
+		logger.Error("app - Run - httpServer.Notify", "err", err)
 	}
 
-	grpcServer.GracefulStop()
+	// shutdown http server
+	err = httpServer.Shutdown()
+	if err != nil {
+		logger.Error("app - Run - httpServer.Shutdown", "err", err)
+	}
 }

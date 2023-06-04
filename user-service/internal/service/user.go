@@ -2,199 +2,80 @@ package service
 
 import (
 	"context"
-	"github.com/stas-bukovskiy/read-n-share/user-service/config"
-	pb "github.com/stas-bukovskiy/read-n-share/user-service/internal/controller/grpc"
+	"fmt"
+	"github.com/stas-bukovskiy/read-n-share/user-service/internal/entity"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userService struct {
-	pb.UnimplementedUserServiceServer
 	serviceContext
-}
-
-type serviceContext struct {
-	cfg     *config.Config
-	storage UserStorage
-}
-
-type Options struct {
-	Storage UserStorage
-	Config  *config.Config
 }
 
 func NewUserService(opts *Options) *userService {
 	return &userService{
 		serviceContext: serviceContext{
-			cfg:     opts.Config,
-			storage: opts.Storage,
+			cfg:      opts.Config,
+			storages: opts.Storages,
+			logger:   opts.Logger.Named("UserService"),
 		},
 	}
 }
 
-const (
-	internalServerErrorCode = "internal server error"
+func (s *userService) CreateUser(ctx context.Context, user *entity.User) (*entity.User, error) {
+	logger := s.logger.Named("CreateUser").
+		With("user", user).
+		WithContext(ctx)
 
-	userAlreadyExistsErrorCode  = "user_already_exists"
-	invalidCredentialsErrorCode = "invalid_credentials"
-	invalidTokenErrorCode       = "invalid_token"
-)
-
-const (
-	errTypeClient = "client"
-	errTypeServer = "server"
-)
-
-func (s userService) CreateUser(ctx context.Context, r *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	response := pb.CreateUserResponse{}
-
-	hashedPassword, err := hashPassword(r.Password)
+	hashedPassword, err := hashPassword(user.Password)
 	if err != nil {
-		response.Error = &pb.Error{
-			Message: "failed to create user",
-			Code:    internalServerErrorCode,
-			Type:    errTypeServer,
-			Details: err.Error(),
-		}
-		return &response, nil
+		logger.Error("failed to hash password", "error", err)
+		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
+	logger.Debug("hashed password")
+	user.Password = hashedPassword
 
-	userWithEmail, err := s.storage.GetUser(&GetUserFilter{Email: r.Email})
+	userWithEmail, err := s.storages.User.GetUser(&GetUserFilter{Email: &user.Email})
 	if err != nil {
-		response.Error = &pb.Error{
-			Message: "failed to create user",
-			Code:    internalServerErrorCode,
-			Type:    errTypeServer,
-			Details: err.Error(),
-		}
-		return &response, nil
+		logger.Error("failed to get user", "error", err)
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	if userWithEmail != nil {
-		response.Error = &pb.Error{
-			Message: "user with this email already exists",
-			Code:    userAlreadyExistsErrorCode,
-			Type:    errTypeClient,
-		}
-		return &response, nil
+		logger.Info("user with this email already exists")
+		return nil, ErrCreateUserUserAlreadyExists
 	}
 
-	user := &pb.User{
-		Email:    r.Email,
-		Name:     r.Name,
-		Password: hashedPassword,
-		Role:     r.Role,
-	}
-
-	user, err = s.storage.CreateUser(user)
+	user, err = s.storages.User.CreateUser(user)
 	if err != nil {
-		response.Error = &pb.Error{
-			Message: "failed to create user",
-			Code:    internalServerErrorCode,
-			Type:    errTypeServer,
-			Details: err.Error(),
-		}
-		return &response, nil
+		logger.Error("failed to create user", "error", err)
+		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
-	response.User = user
-
-	return &response, nil
+	logger.Info("successfully created user")
+	return user, nil
 }
 
-func (s userService) GetUser(ctx context.Context, r *pb.GetUserRequest) (*pb.GetUserResponse, error) {
-	response := pb.GetUserResponse{}
+func (s *userService) GetUser(ctx context.Context, options *GetUserOptions) (*entity.User, error) {
+	logger := s.logger.Named("GetUser").
+		With("options", options).
+		WithContext(ctx)
 
-	user, err := s.storage.GetUser(&GetUserFilter{ID: r.Id})
+	user, err := s.storages.User.GetUser(&GetUserFilter{
+		ID:       options.ID,
+		Email:    options.Email,
+		Username: options.Username,
+	})
 	if err != nil {
-		response.Error = &pb.Error{
-			Message: "failed to get user",
-			Code:    internalServerErrorCode,
-			Type:    errTypeServer,
-			Details: err.Error(),
-		}
-		return &response, nil
+		logger.Error("failed to get user", "error", err)
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
-
-	response.User = user
-
-	return &response, nil
-}
-
-func (s userService) LoginUser(ctx context.Context, r *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
-	response := pb.LoginUserResponse{}
-
-	user, err := s.storage.GetUser(&GetUserFilter{Email: r.Email})
-	if err != nil {
-		response.Error = &pb.Error{
-			Message: "failed to login user",
-			Code:    internalServerErrorCode,
-			Type:    errTypeServer,
-			Details: err.Error(),
-		}
-		return &response, nil
+	if user == nil {
+		logger.Info("user not found")
+		return nil, ErrGetUserUserNotFound
 	}
+	logger = logger.With("user", user)
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(r.Password))
-	if err != nil {
-		response.Error = &pb.Error{
-			Message: "unable to login user",
-			Code:    invalidCredentialsErrorCode,
-			Type:    errTypeClient,
-			Details: "invalid password for user",
-		}
-		return &response, nil
-	}
-
-	token, err := SignToken(&TokenClaims{
-		UserID:   user.Id,
-		UserRole: user.Role,
-	}, s.cfg.HMACSecret)
-	if err != nil {
-		response.Error = &pb.Error{
-			Message: "failed to login user",
-			Code:    internalServerErrorCode,
-			Type:    errTypeServer,
-			Details: err.Error(),
-		}
-		return &response, nil
-	}
-
-	response.User = user
-	response.Token = token
-
-	return &response, nil
-}
-
-func (s userService) VerifyUser(ctx context.Context, r *pb.VerifyUserRequest) (*pb.VerifyUserResponse, error) {
-	response := pb.VerifyUserResponse{}
-
-	claims, err := VerifyToken(r.Token, s.cfg.HMACSecret)
-	if err != nil {
-		response.Error = &pb.Error{
-			Message: "unable to verify user",
-			Code:    invalidTokenErrorCode,
-			Type:    errTypeClient,
-		}
-		return &response, nil
-	}
-
-	user, err := s.storage.GetUser(&GetUserFilter{ID: claims.UserID})
-	if err != nil {
-		response.Error = &pb.Error{
-			Message: "failed to verify user",
-			Code:    internalServerErrorCode,
-			Type:    errTypeServer,
-			Details: err.Error(),
-		}
-		return &response, nil
-	}
-
-	response.User = user
-
-	return &response, nil
-}
-
-func (s userService) mustEmbedUnimplementedUserServiceServer() {
-
+	logger.Info("successfully got user")
+	return user, nil
 }
 
 func hashPassword(password string) (string, error) {

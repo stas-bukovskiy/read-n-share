@@ -2,13 +2,12 @@ package service
 
 import (
 	"context"
-	pb "github.com/stas-bukovskiy/read-n-share/book-uploader/internal/controller/grpc"
+	"fmt"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/pkg/errs"
 )
 
 type authService struct {
 	serviceContext
-	authClient pb.UserServiceClient
 }
 
 func NewAuthService(options *Options) *authService {
@@ -16,8 +15,8 @@ func NewAuthService(options *Options) *authService {
 		serviceContext: serviceContext{
 			cfg:    options.Config,
 			logger: options.Logger.Named("AuthService"),
+			apis:   options.APIs,
 		},
-		authClient: options.AuthClient,
 	}
 }
 
@@ -27,27 +26,19 @@ func (s *authService) VerifyToken(ctx context.Context, token string) (string, er
 		WithContext(ctx).
 		With("token", token)
 
-	output, err := s.authClient.VerifyUser(ctx, &pb.VerifyUserRequest{
-		Token: token,
-	})
+	user, err := s.apis.User.VerifyToken(ctx, token)
 	if err != nil {
-		logger.Error("failed to verify token", "err", err)
-		return "", err
-	}
-
-	if output.Error != nil {
-		logger.Info("unable to verify token", "reason", output.Error)
-		return "", &errs.Err{
-			Code:    output.Error.Code,
-			Message: output.Error.Message,
-			Details: map[string]string{
-				"details": output.Error.Details,
-			},
+		if errs.IsExpected(err) {
+			logger.Info("unable to verify token", "reason", err)
+			return "", err
 		}
+		logger.Error("failed to verify token", "err", err)
+		return "", fmt.Errorf("failed to verify token: %w", err)
 	}
+	logger = logger.With("user", user)
 
 	logger.Info("token verified")
-	return output.User.Id, nil
+	return user.ID, nil
 }
 
 func (s *authService) Login(ctx context.Context, email, password string) (string, error) {
@@ -56,24 +47,16 @@ func (s *authService) Login(ctx context.Context, email, password string) (string
 		WithContext(ctx).
 		With("email", email, "password", password)
 
-	output, err := s.authClient.LoginUser(ctx, &pb.LoginUserRequest{
-		Email:    email,
-		Password: password,
-	})
+	output, err := s.apis.User.Login(ctx, email, password)
 	if err != nil {
-		logger.Error("failed to login", "err", err)
-		return "", err
-	}
-	if output.Error != nil {
-		logger.Info("unable to login", "reason", output.Error)
-		return "", &errs.Err{
-			Code:    output.Error.Code,
-			Message: output.Error.Message,
-			Details: map[string]string{
-				"details": output.Error.Details,
-			},
+		if errs.IsExpected(err) {
+			logger.Info("unable to login", "reason", err)
+			return "", err
 		}
+		logger.Error("failed to login", "err", err)
+		return "", fmt.Errorf("failed to login: %w", err)
 	}
+	logger = logger.With("user", output.User)
 
 	logger.Info("user logged in")
 	return output.Token, nil

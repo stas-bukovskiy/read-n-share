@@ -4,5 +4,8 @@ build:
 run: build
 	./.bin/user-service
 
-proto-gen:
-	protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative internal/controller/grpc/user.proto
+docker-build:
+	docker build -t read-n-share-user-service .
+
+docker-run:
+	docker run -p 8001:8001 read-n-share-user-service
