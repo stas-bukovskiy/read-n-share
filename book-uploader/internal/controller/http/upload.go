@@ -21,7 +21,7 @@ func setupUploadRoutes(options routerOptions) {
 	}
 
 	group := options.router.Group("/upload")
-	//group.Use(newAuthMiddleware(options))
+	group.Use(newAuthMiddleware(options))
 	{
 		group.POST("/book", errorHandler(options, uploadRoutes.uploadBook))
 	}

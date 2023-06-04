@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/config"
-	pb "github.com/stas-bukovskiy/read-n-share/book-uploader/internal/controller/grpc"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/internal/entity"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/pkg/logging"
 	"mime/multipart"
@@ -15,10 +14,9 @@ type Services struct {
 }
 
 type Options struct {
-	AuthClient pb.UserServiceClient
-	APIs       APIs
-	Config     *config.Config
-	Logger     logging.Logger
+	APIs   APIs
+	Config *config.Config
+	Logger logging.Logger
 }
 
 type serviceContext struct {

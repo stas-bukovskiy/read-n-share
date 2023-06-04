@@ -21,8 +21,7 @@ type (
 	}
 
 	Auth struct {
-		Host string `env:"AUTH_SERVICE_HOST" env-default:"localhost"`
-		Port string `env:"AUTH_SERVICE_PORT" env-default:"8001"`
+		Host string `env:"AUTH_SERVICE_HOST" env-default:"http://localhost:8001/api/v1"`
 	}
 
 	AWS struct {

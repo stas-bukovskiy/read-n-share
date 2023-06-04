@@ -1,16 +1,20 @@
 package service
 
 import (
-	pb "github.com/stas-bukovskiy/read-n-share/user-service/internal/controller/grpc"
+	"github.com/stas-bukovskiy/read-n-share/user-service/internal/entity"
 )
 
+type Storages struct {
+	User UserStorage
+}
+
 type UserStorage interface {
-	CreateUser(user *pb.User) (*pb.User, error)
-	GetUser(filter *GetUserFilter) (*pb.User, error)
+	CreateUser(user *entity.User) (*entity.User, error)
+	GetUser(filter *GetUserFilter) (*entity.User, error)
 }
 
 type GetUserFilter struct {
-	ID       string
-	Email    string
-	Username string
+	ID       *string
+	Email    *string
+	Username *string
 }
