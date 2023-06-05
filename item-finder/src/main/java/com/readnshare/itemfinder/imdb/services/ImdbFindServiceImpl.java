@@ -1,6 +1,5 @@
 package com.readnshare.itemfinder.imdb.services;
 
-import com.google.common.base.Strings;
 import com.readnshare.itemfinder.imdb.domain.MovieData;
 import com.readnshare.itemfinder.imdb.domain.MovieSearchData;
 import com.readnshare.itemfinder.imdb.exceptions.ImdbException;
@@ -26,7 +25,7 @@ public class ImdbFindServiceImpl implements ImdbFindService {
 
     @Override
     public Mono<MovieSearchData> search(String expression) {
-        if (Strings.isNullOrEmpty(expression))
+        if (!StringUtils.hasText(expression))
             return Mono.error(new IllegalArgumentException("expression can not be blank"));
 
         final String searchURL = "/Search/{apiKey}/{expression}";
@@ -49,7 +48,7 @@ public class ImdbFindServiceImpl implements ImdbFindService {
 
     @Override
     public Mono<MovieData> getMovieInfo(String imdbId) {
-        if (Strings.isNullOrEmpty(imdbId))
+        if (!StringUtils.hasText(imdbId))
             return Mono.error(new IllegalArgumentException("imdbId must not be blank"));
         if (!imdbId.startsWith("tt"))
             return Mono.error(new IllegalArgumentException("valid imdbId start with 'tt'"));
