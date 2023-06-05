@@ -1,6 +1,5 @@
 package com.readnshare.itemfinder.googlebooks.deserializers;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -15,7 +14,7 @@ import java.util.Map;
 public class BookDataDeserialize extends JsonDeserializer<BookData> {
 
     @Override
-    public BookData deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+    public BookData deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
 
         String id = node.get("id") == null ? null : node.get("id").asText();
@@ -28,12 +27,12 @@ public class BookDataDeserialize extends JsonDeserializer<BookData> {
                     id,
                     volumeInfoNode.get("title") == null ? "" : volumeInfoNode.get("title").asText(),
                     volumeInfoNode.get("subtitle") == null ? "" : volumeInfoNode.get("subtitle").asText(),
-                    volumeInfoNode.get("authors") == null ? List.of() : p.getCodec().readValue(volumeInfoNode.get("authors").traverse(), new TypeReference<List<String>>() {
+                    volumeInfoNode.get("authors") == null ? List.of() : p.getCodec().readValue(volumeInfoNode.get("authors").traverse(), new TypeReference<>() {
                     }),
                     volumeInfoNode.get("publishedDate") == null ? "" : volumeInfoNode.get("publishedDate").asText(),
-                    volumeInfoNode.get("categories") == null ? List.of() : p.getCodec().readValue(volumeInfoNode.get("categories").traverse(), new TypeReference<List<String>>() {
+                    volumeInfoNode.get("categories") == null ? List.of() : p.getCodec().readValue(volumeInfoNode.get("categories").traverse(), new TypeReference<>() {
                     }),
-                    volumeInfoNode.get("imageLinks") == null ? Map.of() : p.getCodec().readValue(volumeInfoNode.get("imageLinks").traverse(), new TypeReference<Map<String, String>>() {
+                    volumeInfoNode.get("imageLinks") == null ? Map.of() : p.getCodec().readValue(volumeInfoNode.get("imageLinks").traverse(), new TypeReference<>() {
                     }),
                     volumeInfoNode.get("description") == null ? "" : volumeInfoNode.get("description").asText(),
                     pageCount,

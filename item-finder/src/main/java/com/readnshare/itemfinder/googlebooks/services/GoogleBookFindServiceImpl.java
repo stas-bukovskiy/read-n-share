@@ -1,12 +1,12 @@
 package com.readnshare.itemfinder.googlebooks.services;
 
-import com.google.common.base.Strings;
 import com.readnshare.itemfinder.googlebooks.domain.BookData;
 import com.readnshare.itemfinder.googlebooks.domain.BookSearchData;
 import com.readnshare.itemfinder.googlebooks.exceptions.GoogleBookNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
@@ -27,7 +27,7 @@ public class GoogleBookFindServiceImpl implements GoogleBookFindService {
 
     @Override
     public Mono<BookSearchData> search(String expression, BookSearchOrder searchOrder, int startIndex, int maxResults) {
-        if (Strings.isNullOrEmpty(expression))
+        if (!StringUtils.hasText(expression))
             return Mono.error(new IllegalArgumentException("expression can not be blank"));
 
         String url = buildSearchUrl(expression, searchOrder, startIndex, maxResults);
@@ -47,7 +47,7 @@ public class GoogleBookFindServiceImpl implements GoogleBookFindService {
 
     @Override
     public Mono<BookData> getBookInfo(String bookId) {
-        if (Strings.isNullOrEmpty(bookId))
+        if (!StringUtils.hasText(bookId))
             return Mono.error(new IllegalArgumentException("bookId can not be blank"));
 
         String url = UriComponentsBuilder.fromHttpUrl(API_BASE_URL)

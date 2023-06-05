@@ -1,4 +1,4 @@
-package com.readnshare.itemfinder.delivery.http;
+package com.readnshare.itemfinder.controllers;
 
 import com.readnshare.itemfinder.dto.MovieDto;
 import com.readnshare.itemfinder.dto.MovieSearchDataDto;
