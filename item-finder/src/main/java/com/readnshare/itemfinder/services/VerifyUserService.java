@@ -1,9 +1,9 @@
 package com.readnshare.itemfinder.services;
 
 
-import org.springframework.security.core.userdetails.UserDetails;
+import com.readnshare.itemfinder.dto.UserDto;
 import reactor.core.publisher.Mono;
 
 public interface VerifyUserService {
-    Mono<UserDetails> verify(String token);
+    Mono<UserDto> verify(String token);
 }

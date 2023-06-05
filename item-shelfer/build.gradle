@@ -41,8 +41,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.security:spring-security-jwt:1.1.1.RELEASE'
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.3'
-    implementation project(path: ':')
-
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
