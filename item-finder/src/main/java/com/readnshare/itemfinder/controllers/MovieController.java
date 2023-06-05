@@ -19,7 +19,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/api/v1/movie")
+@RequestMapping(path = "/api/v1/movies")
 @RequiredArgsConstructor
 @Tags(@Tag(name = "Movies", description = "Movie REST Controller"))
 public class MovieController {
