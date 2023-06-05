@@ -3,9 +3,6 @@ package com.readnshare.itemfinder.mappers;
 import com.readnshare.itemfinder.domain.Book;
 import com.readnshare.itemfinder.dto.BookDto;
 import com.readnshare.itemfinder.googlebooks.domain.BookData;
-import v1.GetBookByGoogleBooksIdResponse;
-
-import static com.readnshare.itemfinder.utils.WrappersUtil.getOrDefaultValue;
 
 public final class BookMapper {
     private BookMapper() {
@@ -44,27 +41,6 @@ public final class BookMapper {
                 .ratingsCount(book.getRatingsCount())
                 .language(book.getLanguage())
                 .build();
-    }
-
-    public static GetBookByGoogleBooksIdResponse toGRPC(Book book) {
-        return GetBookByGoogleBooksIdResponse.newBuilder()
-                .setBook(v1.BookData.newBuilder()
-                        .setId(book.getId())
-                        .setGoogleBookId(book.getGoogleBookId())
-                        .setTitle(book.getTitle())
-                        .setSubtitle(getOrDefaultValue(book.getSubtitle()))
-                        .addAllAuthors(book.getAuthors())
-                        .setPublishedDate(getOrDefaultValue(book.getPublishedDate()))
-                        .addAllCategories(book.getCategories())
-                        .setDescription(getOrDefaultValue(book.getDescription()))
-                        .putAllImageLinks(book.getImageLinks())
-                        .setPageCount(getOrDefaultValue(book.getPageCount()))
-                        .setAverageRating(getOrDefaultValue(book.getAverageRating()))
-                        .setRatingsCount(getOrDefaultValue(book.getRatingsCount()))
-                        .setLanguage(getOrDefaultValue(book.getLanguage()))
-                        .build()
-                ).build();
-
     }
 }
 

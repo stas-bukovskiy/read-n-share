@@ -3,8 +3,6 @@ package com.readnshare.itemfinder.mappers;
 import com.readnshare.itemfinder.dto.BookSearchDataDto;
 import com.readnshare.itemfinder.dto.BookSearchResultDto;
 import com.readnshare.itemfinder.googlebooks.domain.BookSearchData;
-import v1.BookSearchResponse;
-import v1.BookSearchResult;
 
 public final class BookSearchDataMapper {
 
@@ -33,26 +31,4 @@ public final class BookSearchDataMapper {
                 .build();
     }
 
-
-    public static BookSearchResponse toGRPC(BookSearchData search) {
-        return BookSearchResponse.newBuilder()
-                .setExpression(search.getExpression())
-                .addAllResults(search.getResults().stream()
-                        .map(result -> BookSearchResult.newBuilder()
-                                .setId(result.getId())
-                                .setTitle(result.getTitle())
-                                .setSubtitle(result.getSubtitle())
-                                .addAllAuthors(result.getAuthors())
-                                .setPublishedDate(result.getPublishedDate())
-                                .addAllCategories(result.getCategories())
-                                .setDescription(result.getDescription())
-                                .putAllImageLinks(result.getImageLinks())
-                                .setPageCount(result.getPageCount())
-                                .setAverageRating(result.getAverageRating())
-                                .setRatingsCount(result.getRatingsCount())
-                                .setLanguage(result.getLanguage())
-                                .build())
-                        .toList())
-                .build();
-    }
 }

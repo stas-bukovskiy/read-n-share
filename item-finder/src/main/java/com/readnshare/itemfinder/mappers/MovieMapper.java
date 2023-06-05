@@ -3,10 +3,8 @@ package com.readnshare.itemfinder.mappers;
 import com.readnshare.itemfinder.domain.Movie;
 import com.readnshare.itemfinder.dto.MovieDto;
 import com.readnshare.itemfinder.imdb.domain.MovieData;
-import v1.GetMovieByImdbIdResponse;
 
 import static com.readnshare.itemfinder.utils.ParseUtil.*;
-import static com.readnshare.itemfinder.utils.WrappersUtil.getOrDefaultValue;
 
 public final class MovieMapper {
 
@@ -28,27 +26,6 @@ public final class MovieMapper {
                 .writers(parseStringSet(movieData.getWriters()))
                 .imdbRating(parseDouble(movieData.getImDbRating()))
                 .imdbRatingVotes(parseInteger(movieData.getImDbRatingVotes()))
-                .build();
-    }
-
-    public static GetMovieByImdbIdResponse toGRPC(Movie movie) {
-        return GetMovieByImdbIdResponse.newBuilder()
-                .setMovie(v1.MovieData.newBuilder()
-                        .setId(movie.getId())
-                        .setImdbId(movie.getId())
-                        .setTitle(movie.getTitle())
-                        .setOriginalTitle(getOrDefaultValue(movie.getOriginalTitle()))
-                        .setYear(getOrDefaultValue(movie.getYear()))
-                        .setRuntimeMins(getOrDefaultValue(movie.getRuntimeMins()))
-                        .setPlot(getOrDefaultValue(movie.getPlot()))
-                        .setImageURL(getOrDefaultValue(movie.getImageURL()))
-                        .addAllAwards(movie.getAwards())
-                        .addAllGenres(movie.getGenres())
-                        .addAllDirectors(movie.getDirectors())
-                        .addAllWriters(movie.getWriters())
-                        .setImdbRating(getOrDefaultValue(movie.getImdbRating()))
-                        .setImDbRatingVotes(getOrDefaultValue(movie.getImdbRatingVotes()))
-                        .build())
                 .build();
     }
 
