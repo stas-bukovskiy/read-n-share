@@ -1,6 +1,7 @@
 package com.readnshare.itemshelfer.mappers;
 
 import com.readnshare.itemshelfer.domain.User;
+import com.readnshare.itemshelfer.dto.UserDto;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.List;
@@ -10,12 +11,12 @@ public final class UserMapper {
     private UserMapper() {
     }
 
-    public static User of(v1.User user) {
+    public static User of(UserDto userDto) {
         return User.builder()
-                .id(user.getId())
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .authorities(List.of(new SimpleGrantedAuthority(userDto.getRole().toUpperCase())))
                 .build();
     }
+
 }

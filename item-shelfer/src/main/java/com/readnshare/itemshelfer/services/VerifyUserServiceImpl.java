@@ -1,47 +1,64 @@
 package com.readnshare.itemshelfer.services;
 
-import com.readnshare.itemshelfer.exceptions.ClientVerifyingException;
-import com.readnshare.itemshelfer.exceptions.ServerVerifyingException;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.readnshare.itemshelfer.dto.UserDto;
+import com.readnshare.itemshelfer.dto.UserVerifyingResponse;
+import com.readnshare.itemshelfer.exceptions.UserNotVerifiedException;
 import lombok.extern.slf4j.Slf4j;
-import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import v1.ReactorUserServiceGrpc;
-import v1.VerifyUserRequest;
-import v1.VerifyUserResponse;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class VerifyUserServiceImpl implements VerifyUserService {
 
     private static final String SERVICE_NAME = "VERIFY_USER_SERVICE";
-    private static final String SERVER_ERROR_TYPE = "server";
-    private static final String CLIENT_ERROR_TYPE = "client";
 
-    @GrpcClient("user-service")
-    private ReactorUserServiceGrpc.ReactorUserServiceStub userServiceStub;
+    private final WebClient webClient;
 
+    public VerifyUserServiceImpl(@Value("${user-service.base-url}") String baseUrl) {
+        if (!StringUtils.hasText(baseUrl))
+            throw new IllegalArgumentException("user-service.base-url property is required");
+        webClient = WebClient.builder().baseUrl(baseUrl).build();
+    }
 
     @Override
-    public Mono<VerifyUserResponse> verify(String token) {
-        VerifyUserRequest request = VerifyUserRequest.newBuilder().setToken(token).build();
-        return userServiceStub.verifyUser(request)
-                .handle((verifyUserResponse, sink) -> {
-                    v1.Error error = verifyUserResponse.getError();
-                    if (error.getType().equalsIgnoreCase(SERVER_ERROR_TYPE)) {
-                        log.error("[{}] server error occurred during token verifying, token <{}>: {}", SERVICE_NAME, token, error.getMessage());
-                        sink.error(new ServerVerifyingException(error.getMessage()));
-                    } else if (error.getType().equalsIgnoreCase(CLIENT_ERROR_TYPE)) {
-                        log.debug("[{}] client error occurred during token verifying, token <{}>: {}", SERVICE_NAME, token, error.getMessage());
-                        sink.error(new ClientVerifyingException(error.getMessage()));
-                    } else {
-                        log.debug("[{}] successfully verified token <{}>", SERVICE_NAME, token);
-                        sink.next(verifyUserResponse);
+    public Mono<UserDto> verify(String token) {
+        if (!StringUtils.hasText(token))
+            throw new UserNotVerifiedException("token is null or blank");
+        return webClient.get()
+                .uri("/api/v1/auth/verify?token={token}", token)
+                .retrieve()
+                .onStatus(this::isNotVerifiedStatusCode, this::createException)
+                .bodyToMono(UserVerifyingResponse.class)
+                .map(UserVerifyingResponse::getUser)
+                .doOnSuccess(userDto -> log.debug("[{}] successfully verified token <{}>: {}", SERVICE_NAME, token, userDto))
+                .doOnError(error -> log.debug("[{}] error occurred during token verification:", SERVICE_NAME, error));
+    }
+
+
+    private Mono<UserNotVerifiedException> createException(ClientResponse response) {
+        return response.bodyToMono(String.class)
+                .handle((responseBody, sink) -> {
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        JsonNode actualObj = mapper.readTree(responseBody);
+                        JsonNode message = actualObj.get("message");
+                        sink.error(new UserNotVerifiedException(message != null ? message.asText() : ""));
+                    } catch (JsonProcessingException e) {
+                        sink.error(new UserNotVerifiedException("unknown error occurred"));
                     }
                 });
     }
 
-
+    private boolean isNotVerifiedStatusCode(HttpStatusCode httpStatusCode) {
+        return httpStatusCode.value() == 422;
+    }
 }

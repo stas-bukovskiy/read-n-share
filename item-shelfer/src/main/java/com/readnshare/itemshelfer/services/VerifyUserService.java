@@ -1,8 +1,9 @@
 package com.readnshare.itemshelfer.services;
 
+
+import com.readnshare.itemshelfer.dto.UserDto;
 import reactor.core.publisher.Mono;
-import v1.VerifyUserResponse;
 
 public interface VerifyUserService {
-    Mono<VerifyUserResponse> verify(String token);
+    Mono<UserDto> verify(String token);
 }

@@ -1,23 +1,28 @@
 package com.readnshare.itemshelfer.mappers;
 
 import com.readnshare.itemshelfer.domain.AccessRight;
+import com.readnshare.itemshelfer.dto.AccessRightDto;
 
 public final class AccessRightMapper {
 
     private AccessRightMapper() {
     }
 
-    public static v1.AccessRight toGRPC(AccessRight accessRight) {
-        return v1.AccessRight.newBuilder()
-                .setUserId(accessRight.getUserId())
-                .setPermission(v1.Permission.valueOf(accessRight.getPermission().name()))
+    public static AccessRightDto toDTO(AccessRight accessRight) {
+        return AccessRightDto.builder()
+                .userId(accessRight.getUserId())
+                .permission(accessRight.getPermission().name())
                 .build();
     }
 
-    public static AccessRight of(v1.AccessRight accessRight) {
+    public static AccessRight of(AccessRightDto accessRightDto) {
         return AccessRight.builder()
-                .userId(accessRight.getUserId())
-                .permission(AccessRight.Permission.valueOf(accessRight.getPermission().name()))
+                .userId(accessRightDto.getUserId())
+                .permission(parsePermission(accessRightDto.getPermission()))
                 .build();
+    }
+
+    public static AccessRight.Permission parsePermission(String permission) {
+        return AccessRight.Permission.valueOf(permission);
     }
 }

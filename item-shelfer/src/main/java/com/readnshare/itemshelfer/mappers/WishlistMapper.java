@@ -1,9 +1,10 @@
 package com.readnshare.itemshelfer.mappers;
 
-import com.google.protobuf.Timestamp;
 import com.readnshare.itemshelfer.domain.AccessRight;
 import com.readnshare.itemshelfer.domain.Wishlist;
-import v1.*;
+import com.readnshare.itemshelfer.dto.CreateWishlistRequest;
+import com.readnshare.itemshelfer.dto.UpdateWishlistRequest;
+import com.readnshare.itemshelfer.dto.WishlistDto;
 
 import java.util.HashSet;
 
@@ -12,36 +13,44 @@ public final class WishlistMapper {
     private WishlistMapper() {
     }
 
-    public static Wishlist of(CreateWishlistRequest request) {
+    public static Wishlist of(CreateWishlistRequest createRequest) {
         return Wishlist.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .itemIds(new HashSet<>(request.getItemIdsList()))
-                .wishlistType(Wishlist.WishlistType.valueOf(request.getWishlistType().name()))
-                .itemType(Wishlist.ItemType.valueOf(request.getType().name()))
+                .title(createRequest.getTitle())
+                .description(createRequest.getDescription())
+                .itemIds(new HashSet<>(createRequest.getItemIds()))
+                .itemType(parseItemType(createRequest.getItemType()))
+                .wishlistType(parseWishlistType(createRequest.getWishlistType()))
                 .build();
     }
 
-    public static v1.Wishlist toGRPC(Wishlist wishlist, AccessRight right) {
-        return v1.Wishlist.newBuilder()
-                .setId(wishlist.getId())
-                .setTitle(wishlist.getTitle())
-                .setDescription(wishlist.getDescription())
-                .addAllItemIds(wishlist.getItemIds())
-                .setItemType(ItemType.valueOf(wishlist.getItemType().name()))
-                .setWishlistType(WishlistType.valueOf(wishlist.getWishlistType().name()))
-                .setPermission(Permission.valueOf(right.getPermission().name()))
-                .setCreatedAt(Timestamp.newBuilder().setSeconds(wishlist.getCreatedAt().getTime()).build())
-                .setUpdatedAt(Timestamp.newBuilder().setSeconds(wishlist.getUpdatedAt().getTime()).build())
+    public static Wishlist.ItemType parseItemType(String itemType) {
+        return Wishlist.ItemType.valueOf(itemType);
+    }
+
+    public static Wishlist.WishlistType parseWishlistType(String wishlistType) {
+        return Wishlist.WishlistType.valueOf(wishlistType);
+    }
+
+    public static WishlistDto toDTO(Wishlist wishlist, AccessRight accessRight) {
+        return WishlistDto.builder()
+                .id(wishlist.getId())
+                .title(wishlist.getTitle())
+                .description(wishlist.getDescription())
+                .itemIds(wishlist.getItemIds().stream().toList())
+                .itemType(wishlist.getItemType().name())
+                .wishlistType(wishlist.getWishlistType().name())
+                .permission(accessRight.getPermission().name())
+                .createdAt(wishlist.getCreatedAt().getTime())
+                .updatedAt(wishlist.getUpdatedAt().getTime())
                 .build();
     }
 
-    public static Wishlist of(UpdateWishlistRequest request) {
+    public static Wishlist of(UpdateWishlistRequest updateRequest) {
         return Wishlist.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .itemIds(new HashSet<>(request.getItemIdsList()))
-                .wishlistType(Wishlist.WishlistType.valueOf(request.getWishlistType().name()))
+                .title(updateRequest.getTitle())
+                .description(updateRequest.getDescription())
+                .itemIds(new HashSet<>(updateRequest.getItemIds()))
+                .wishlistType(parseWishlistType(updateRequest.getWishlistType()))
                 .build();
     }
 }

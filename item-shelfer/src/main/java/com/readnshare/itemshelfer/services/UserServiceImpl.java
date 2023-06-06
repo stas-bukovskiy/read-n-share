@@ -24,4 +24,16 @@ public class UserServiceImpl implements UserService {
                 .doOnSuccess(currentUserId -> log.debug("successfully get currently authenticated user id: <{}>", currentUserId))
                 .doOnError(error -> log.error("error occurred during currently authenticated user id getting: g:", error));
     }
+
+    @Override
+    public Mono<String> getCurrentUserToken() {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(securityContext -> {
+                    Authentication authentication = securityContext.getAuthentication();
+                    return (String) authentication.getCredentials();
+                })
+                .doOnSuccess(token -> log.debug("successfully get currently authenticated user token: <{}>", token))
+                .doOnError(error -> log.error("error occurred during currently authenticated user token getting: g:", error));
+
+    }
 }

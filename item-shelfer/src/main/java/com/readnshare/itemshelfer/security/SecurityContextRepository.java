@@ -1,11 +1,12 @@
 package com.readnshare.itemshelfer.security;
 
-import com.readnshare.itemshelfer.exceptions.ClientVerifyingException;
+import com.readnshare.itemshelfer.exceptions.UserNotVerifiedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -26,7 +27,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
     private static final String TOKEN_PREFIX = "Bearer ";
 
-    private final AuthenticationManager authenticationManager;
+    private final ReactiveAuthenticationManager authenticationManager;
 
     @Override
     public Mono<Void> save(ServerWebExchange swe, SecurityContext sc) {
@@ -47,7 +48,7 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
             Authentication auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
             return this.authenticationManager.authenticate(auth)
                     .onErrorMap(
-                            er -> er instanceof ClientVerifyingException,
+                            er -> er instanceof UserNotVerifiedException,
                             autEx -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, autEx.getMessage(), autEx)
                     )
                     .map(SecurityContextImpl::new);
