@@ -1,0 +1,36 @@
+version: '3'
+services:
+
+  user-service:
+    container_name: read-n-share-user-service
+    build:
+      context: ./user-service
+    ports:
+      - "8001:8001"
+    networks:
+      - read-n-share-network
+
+  item-finder:
+    container_name: read-n-share-item-finder
+    build:
+      context: ./item-finder
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./item-finder/.env
+    networks:
+      - read-n-share-network
+
+  item-shelfer:
+    container_name: read-n-share-item-shelfer
+    build:
+      context: ./item-shelfer
+    ports:
+      - "8081:8081"
+    env_file:
+      - ./item-shelfer/.env
+    networks:
+      - read-n-share-network
+
+networks:
+  read-n-share-network:

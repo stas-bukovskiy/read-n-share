@@ -1,6 +1,6 @@
 include .env
 
-build: clean proto-gen jar-gen
+build: clean jar-gen
 
 docker-build:
 	docker buildx build -t item-shelfer .
@@ -13,9 +13,6 @@ local:
 
 clean:
 	./gradlew clean
-
-proto-gen:
-	./gradlew generateProto
 
 jar-gen:
 	./gradlew bootjar
