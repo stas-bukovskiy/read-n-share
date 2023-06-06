@@ -9,7 +9,6 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface WishlistRepository extends ReactiveMongoRepository<Wishlist, String> {
 
-    Flux<Wishlist> findByRightsUserIdAndRightsPermissionIsNot(String userId, AccessRight.Permission permission);
 
     Flux<Wishlist> findAllByRightsContainsAndWishlistType(AccessRight accessRight, Wishlist.WishlistType wishlistType);
 

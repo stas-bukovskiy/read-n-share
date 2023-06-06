@@ -146,7 +146,14 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     public Flux<Tuple2<Wishlist, AccessRight>> getSharedWithCurrentUser() {
         return userService.getCurrentUserId()
-                .flatMapMany(userId -> wishlistRepository.findByRightsUserIdAndRightsPermissionIsNot(userId, AccessRight.Permission.OWNER))
+                .flatMapMany(userId -> wishlistRepository.findAllByRightsContains(AccessRight.builder()
+                                .userId(userId)
+                                .permission(AccessRight.Permission.READ)
+                                .build())
+                        .concatWith(wishlistRepository.findAllByRightsContains(AccessRight.builder()
+                                .userId(userId)
+                                .permission(AccessRight.Permission.READ)
+                                .build())))
                 .flatMap(wishlist -> Mono.just(wishlist)
                         .zipWhen(accessRightService::getAccessRightOfCurrentUser))
                 .doOnComplete(() -> log.debug("successfully get all wishlists shared with current user"))
