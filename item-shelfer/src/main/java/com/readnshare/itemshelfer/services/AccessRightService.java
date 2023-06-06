@@ -12,5 +12,7 @@ public interface AccessRightService {
 
     Flux<AccessRight> addAccessRight(String wishlistId, AccessRight rightToaAdd);
 
-    Flux<AccessRight> deleteAccessRight(String wishlistId, AccessRight rightToDelete);
+    Flux<AccessRight> updateAccessRight(String wishlistId, AccessRight rightToUpdate);
+
+    Flux<AccessRight> deleteAccessRight(String wishlistId, String userId);
 }

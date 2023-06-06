@@ -20,7 +20,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping(path = "/api/v1/book")
+@RequestMapping(path = "/api/v1/books")
 @RequiredArgsConstructor
 @Tags(@Tag(name = "Books", description = "Book REST Controller"))
 public class BookController {

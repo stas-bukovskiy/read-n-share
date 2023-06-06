@@ -1,11 +1,11 @@
-package com.readnshare.itemshelfer.services;
+package com.readnshare.itemfinder.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.readnshare.itemshelfer.dto.UserDto;
-import com.readnshare.itemshelfer.dto.UserVerifyingResponse;
-import com.readnshare.itemshelfer.exceptions.UserNotVerifiedException;
+import com.readnshare.itemfinder.dto.UserDto;
+import com.readnshare.itemfinder.dto.UserVerifyingResponse;
+import com.readnshare.itemfinder.exceptions.UserNotVerifiedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;

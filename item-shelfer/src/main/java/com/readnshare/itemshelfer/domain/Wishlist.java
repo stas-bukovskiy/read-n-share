@@ -7,12 +7,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Set;
 
 @Data
 @Builder
-@Document(collation = "wishlists")
+@Document(collection = "wishlists")
 public class Wishlist {
 
     @Id
@@ -27,9 +27,9 @@ public class Wishlist {
     @Field("wishlist_type")
     private WishlistType wishlistType;
     @Field("created_at")
-    private Timestamp createdAt;
+    private Date createdAt;
     @Field("updated_at")
-    private Timestamp updatedAt;
+    private Date updatedAt;
     private Set<AccessRight> rights;
 
 
