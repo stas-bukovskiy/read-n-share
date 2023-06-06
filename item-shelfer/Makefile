@@ -1,9 +1,9 @@
 include .env
 
-build: clean jar-gen
+build: clean proto-gen jar-gen
 
 docker-build:
-	docker buildx build -t item-finder .
+	docker buildx build -t item-shelfer .
 
 run: docker-run
 
@@ -14,11 +14,14 @@ local:
 clean:
 	./gradlew clean
 
+proto-gen:
+	./gradlew generateProto
+
 jar-gen:
 	./gradlew bootjar
 
 docker-run:
 	docker run -p ${SERVER_PORT}:${SERVER_PORT} \
-		--env-file .env item-finder \
-		--name item-finder \
+		--env-file .env item-shelfer \
+		--name item-shelfer \
 		--add-host host.docker.internal:host-gateway

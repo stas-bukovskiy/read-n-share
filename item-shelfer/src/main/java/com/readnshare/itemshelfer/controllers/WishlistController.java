@@ -11,6 +11,7 @@ import com.readnshare.itemshelfer.mappers.AccessRightMapper;
 import com.readnshare.itemshelfer.mappers.WishlistMapper;
 import com.readnshare.itemshelfer.services.AccessRightService;
 import com.readnshare.itemshelfer.services.WishlistService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,10 @@ public class WishlistController {
     private final AccessRightService accessRightService;
 
 
+    @Operation(method = "getAllWishlists",
+            summary = "Get list of all wishlists with opportunity to filter result",
+            operationId = "getAllWishlists",
+            description = "Get list of all wishlists with opportunity to filter by item type or/and by user id")
     @GetMapping
     public Flux<WishlistDto> getAllWishlists(@RequestParam(name = "itemType", required = false, defaultValue = "")
                                              String itemTypeString,
@@ -60,6 +65,10 @@ public class WishlistController {
     }
 
 
+    @Operation(method = "getWishlist",
+            summary = "Get list of all wishlists with opportunity to filter result",
+            operationId = "getWishlist",
+            description = "Get list of all wishlists with opportunity to filter by item type or/and by user id")
     @GetMapping("/{id}")
     public Mono<WishlistDto> getWishlist(@PathVariable String id) {
         return wishlistService.getById(id)
@@ -69,6 +78,10 @@ public class WishlistController {
                 ));
     }
 
+    @Operation(method = "createWishlist",
+            summary = "Create new wishlist",
+            operationId = "createWishlist",
+            description = "Crete new wishlist")
     @PostMapping
     public Mono<WishlistDto> createWishlist(@RequestBody @Validated CreateWishlistRequest request) {
         return wishlistService.create(WishlistMapper.of(request))
@@ -78,6 +91,10 @@ public class WishlistController {
                 ));
     }
 
+    @Operation(method = "updateWishlist",
+            summary = "Update existing wishlist",
+            operationId = "updateWishlist",
+            description = "Update existing wishlist by its id")
     @PutMapping("/{id}")
     public Mono<WishlistDto> updateWishlist(@PathVariable String id, @RequestBody @Validated UpdateWishlistRequest request) {
         return wishlistService.update(id, WishlistMapper.of(request))
@@ -87,6 +104,10 @@ public class WishlistController {
                 ));
     }
 
+    @Operation(method = "deleteWishlist",
+            summary = "Delete existing wishlist",
+            operationId = "deleteWishlist",
+            description = "Delete existing wishlist by its id")
     @DeleteMapping("/{id}")
     public Mono<WishlistDto> deleteWishlist(@PathVariable String id) {
         return wishlistService.delete(id)
@@ -96,6 +117,10 @@ public class WishlistController {
                 ));
     }
 
+    @Operation(method = "getSharedWithMeWishlists",
+            summary = "Delete existing wishlist",
+            operationId = "getSharedWithMeWishlists",
+            description = "Delete existing wishlist by its id")
     @GetMapping("/shared-with-me")
     public Flux<WishlistDto> getSharedWithMeWishlists() {
         return wishlistService.getSharedWithCurrentUser()
@@ -105,25 +130,41 @@ public class WishlistController {
                 ));
     }
 
-
+    @Operation(method = "getAccessRights",
+            summary = "Get access rights for a wishlist by its id",
+            operationId = "getAccessRights",
+            description = "Get access rights for a wishlist by its id")
     @GetMapping("/{id}/access-rights")
     public Flux<AccessRightDto> getAccessRights(@PathVariable String id) {
         return accessRightService.getAllAccessRights(id)
                 .map(AccessRightMapper::toDTO);
     }
 
+
+    @Operation(method = "addAccessRight",
+            summary = "Add access right to wishlist for user",
+            operationId = "addAccessRight",
+            description = "Add access right to wishlist by its id for user")
     @PostMapping("/{id}/access-rights")
     public Flux<AccessRightDto> addAccessRight(@PathVariable String id, @RequestBody @Validated AccessRightDto accessRightDto) {
         return accessRightService.addAccessRight(id, AccessRightMapper.of(accessRightDto))
                 .map(AccessRightMapper::toDTO);
     }
 
+    @Operation(method = "updateAccessRight",
+            summary = "Update access right to wishlist for user",
+            operationId = "updateAccessRight",
+            description = "Update access right to wishlist by its id for user")
     @PutMapping("/{id}/access-rights")
     public Flux<AccessRightDto> updateAccessRight(@PathVariable String id, @RequestBody @Validated AccessRightDto accessRightDto) {
         return accessRightService.updateAccessRight(id, AccessRightMapper.of(accessRightDto))
                 .map(AccessRightMapper::toDTO);
     }
 
+    @Operation(method = "deleteAccessRight",
+            summary = "Delete access right to wishlist for user",
+            operationId = "deleteAccessRight",
+            description = "Delete access right to wishlist by its id and by user id")
     @DeleteMapping("/{id}/access-rights/{userId}")
     public Flux<AccessRightDto> deleteAccessRight(@PathVariable String id, @PathVariable String userId) {
         return accessRightService.deleteAccessRight(id, userId)
