@@ -32,5 +32,16 @@ services:
     networks:
       - read-n-share-network
 
+  item-reviewer:
+    container_name: read-n-share-item-reviewer
+    build:
+      context: ./item-reviewer
+    ports:
+      - "8082:8082"
+    env_file:
+      - ./item-reviewer/.env
+    networks:
+      - read-n-share-network
+
 networks:
   read-n-share-network:
