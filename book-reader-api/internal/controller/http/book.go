@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stas-bukovskiy/read-n-share/book-reader-api/internal/entity"
 	"github.com/stas-bukovskiy/read-n-share/book-reader-api/internal/service"
-	"net/http"
 )
 
 type bookRoutes struct {
@@ -27,7 +26,6 @@ func setupBookRoutes(options routerOptions) {
 		group.GET("/list", errorHandler(options, bookRoutes.listBooks))
 		group.GET("/:id", errorHandler(options, bookRoutes.getBook))
 		group.GET("/:id/url", errorHandler(options, bookRoutes.getBookURL))
-		group.GET("/:id/content", errorHandler(options, bookRoutes.getBookContent))
 	}
 }
 
@@ -123,34 +121,4 @@ func (b *bookRoutes) getBookURL(c *gin.Context) (interface{}, *httpErr) {
 	return &getBookURLResponseBody{
 		URL: url,
 	}, nil
-}
-
-func (b *bookRoutes) getBookContent(c *gin.Context) (interface{}, *httpErr) {
-	logger := b.logger.Named("getBookContent").WithContext(c.Request.Context())
-
-	_, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		logger.Info("invalid book id")
-		return nil, &httpErr{
-			Type:    httpErrTypeClient,
-			Message: "invalid book id",
-			Details: err.Error(),
-		}
-	}
-
-	content, err := b.services.Book.GetBookContent(c.Request.Context(), c.Param("id"), c.Value("userID").(string))
-	if err != nil {
-		logger.Error("failed to get book content", "err", err)
-		return nil, &httpErr{
-			Type:    httpErrTypeServer,
-			Message: "failed to get book content",
-			Details: err.Error(),
-		}
-	}
-	logger = logger.With("content", content)
-
-	c.Data(http.StatusOK, "application/epub+zip", content)
-
-	logger.Info("book content retrieved")
-	return nil, nil
 }

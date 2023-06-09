@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/stas-bukovskiy/read-n-share/book-reader-api/internal/entity"
-	"os"
 )
 
 type bookService struct {
@@ -88,45 +87,4 @@ func (s *bookService) GetBookURL(ctx context.Context, bookID, userID string) (st
 
 	logger.Info("url retrieved")
 	return url, nil
-}
-
-func (s *bookService) GetBookContent(ctx context.Context, bookID, userID string) ([]byte, error) {
-	logger := s.logger.
-		Named("GetBookContent").
-		WithContext(ctx).
-		With("bookID", bookID, "userID", userID)
-
-	book, err := s.GetBook(ctx, bookID, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	fileContent, err := os.ReadFile(fmt.Sprintf("local/%s-book.epub", book.ID))
-	if err != nil {
-		if !os.IsNotExist(err) {
-			logger.Error("failed to read file", "err", err)
-			return nil, fmt.Errorf("failed to read file: %w", err)
-		} else {
-			newFile, err := os.Create(fmt.Sprintf("local/%s-book.epub", book.ID))
-			if err != nil {
-				logger.Error("failed to create file", "err", err)
-				return nil, fmt.Errorf("failed to create file: %w", err)
-			}
-
-			err = s.apis.File.DownloadFile(book.ID, newFile)
-			if err != nil {
-				logger.Error("failed to download file", "err", err)
-				return nil, fmt.Errorf("failed to download file: %w", err)
-			}
-
-			fileContent, err = os.ReadFile(fmt.Sprintf("local/%s-book.epub", book.ID))
-			if err != nil {
-				logger.Error("failed to read file", "err", err)
-				return nil, fmt.Errorf("failed to read file: %w", err)
-			}
-		}
-	}
-
-	logger.Info("content retrieved")
-	return fileContent, nil
 }

@@ -47,7 +47,6 @@ type BookService interface {
 	ListBooks(ctx context.Context, options *BookServiceListOptions) ([]*entity.Book, error)
 	GetBook(ctx context.Context, bookID, userID string) (*entity.Book, error)
 	GetBookURL(ctx context.Context, bookID, userID string) (string, error)
-	GetBookContent(ctx context.Context, bookID, userID string) ([]byte, error)
 }
 
 var (

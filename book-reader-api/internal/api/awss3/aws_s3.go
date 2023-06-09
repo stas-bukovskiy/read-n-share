@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"io"
-	"os"
 	"time"
 
 	// third party
@@ -115,25 +114,4 @@ func (a *awsS3) GetFileUrl(ctx context.Context, key string) (string, error) {
 
 	logger.Info("successfully got file url")
 	return fileUrl, nil
-}
-
-func (a *awsS3) DownloadFile(key string, file *os.File) error {
-	logger := a.logger.
-		Named("DownloadFile").
-		With("key", key)
-
-	downloader := s3manager.NewDownloader(a.session)
-
-	numBytes, err := downloader.Download(file,
-		&s3.GetObjectInput{
-			Bucket: aws.String(a.cfg.AWS.S3Bucket),
-			Key:    aws.String(key),
-		})
-	if err != nil {
-		logger.Error("failed to download file", "err", err)
-		return fmt.Errorf("failed to download file: %w", err)
-	}
-
-	logger.Info("Downloaded", "file", file.Name(), "bytes", numBytes)
-	return nil
 }
