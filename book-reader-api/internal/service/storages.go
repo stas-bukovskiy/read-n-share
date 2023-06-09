@@ -13,12 +13,29 @@ type Storages struct {
 type BookStorage interface {
 	// Save saves book to storage.
 	Save(ctx context.Context, book *entity.Book) (*entity.Book, error)
+	// Update updates book in storage.
+	Update(ctx context.Context, book *entity.Book) (*entity.Book, error)
 	// List returns list of books from storage.
 	List(ctx context.Context, filter *BookStorageListFilter) ([]*entity.Book, error)
 	// Get returns book from storage.
 	Get(ctx context.Context, bookID string) (*entity.Book, error)
+
+	// CreateShareLink creates share link for book.
+	CreateShareLink(ctx context.Context, link *entity.BookShareLink) (*entity.BookShareLink, error)
+	// GetShareLink returns share link for book.
+	GetShareLink(ctx context.Context, linkID string) (*entity.BookShareLink, error)
+	// ListShareLinks returns list of share links for book.
+	ListShareLinks(ctx context.Context, filter *BookShareLinkStorageListFilter) ([]*entity.BookShareLink, error)
+	// DeleteShareLink deletes share link for book.
+	DeleteShareLink(ctx context.Context, linkID string) error
 }
 
 type BookStorageListFilter struct {
+	UserID      *string
+	GuestUserID *string
+}
+
+type BookShareLinkStorageListFilter struct {
+	BookID *string
 	UserID *string
 }
