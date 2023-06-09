@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"io"
+	"os"
 	"time"
 
 	// third party
@@ -55,9 +56,10 @@ func (a *awsS3) UploadFile(ctx context.Context, key string, reader io.Reader) er
 
 	uploader := s3manager.NewUploader(a.session)
 	_, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(a.cfg.AWS.S3Bucket),
-		Key:    aws.String(key),
-		Body:   reader,
+		Bucket:      aws.String(a.cfg.AWS.S3Bucket),
+		Key:         aws.String(key + ".epub"),
+		Body:        reader,
+		ContentType: aws.String("application/epub+zip"),
 	})
 	if err != nil {
 		logger.Error("failed to upload file", "err", err)
@@ -100,7 +102,7 @@ func (a *awsS3) GetFileUrl(ctx context.Context, key string) (string, error) {
 	// get file url from S3
 	req, _ := a.s3.GetObjectRequest(&s3.GetObjectInput{
 		Bucket: aws.String(a.cfg.AWS.S3Bucket),
-		Key:    aws.String(key),
+		Key:    aws.String(key + ".epub"),
 	})
 
 	// get presigned url
@@ -113,4 +115,25 @@ func (a *awsS3) GetFileUrl(ctx context.Context, key string) (string, error) {
 
 	logger.Info("successfully got file url")
 	return fileUrl, nil
+}
+
+func (a *awsS3) DownloadFile(key string, file *os.File) error {
+	logger := a.logger.
+		Named("DownloadFile").
+		With("key", key)
+
+	downloader := s3manager.NewDownloader(a.session)
+
+	numBytes, err := downloader.Download(file,
+		&s3.GetObjectInput{
+			Bucket: aws.String(a.cfg.AWS.S3Bucket),
+			Key:    aws.String(key),
+		})
+	if err != nil {
+		logger.Error("failed to download file", "err", err)
+		return fmt.Errorf("failed to download file: %w", err)
+	}
+
+	logger.Info("Downloaded", "file", file.Name(), "bytes", numBytes)
+	return nil
 }

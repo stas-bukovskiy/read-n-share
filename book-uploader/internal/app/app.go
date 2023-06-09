@@ -6,6 +6,8 @@ import (
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/internal/api/user"
 	httpcontroller "github.com/stas-bukovskiy/read-n-share/book-uploader/internal/controller/http"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/internal/service"
+	"github.com/stas-bukovskiy/read-n-share/book-uploader/internal/storage"
+	"github.com/stas-bukovskiy/read-n-share/book-uploader/pkg/database"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/pkg/httpserver"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/pkg/logging"
 	"os"
@@ -17,21 +19,35 @@ import (
 func Run(cfg *config.Config) {
 	logger := logging.New("INFO")
 
+	mongodb, err := database.NewMongoDB(database.MongoDBConfig{
+		URI:      cfg.MongoDB.URI,
+		Database: cfg.MongoDB.Database,
+	})
+	if err != nil {
+		logger.Fatal("failed to init mongodb", "err", err)
+	}
+
 	apis := service.APIs{
 		File: awss3.New(cfg, logger),
 		User: user.New(cfg, logger),
 	}
 
+	storages := service.Storages{
+		Book: storage.NewBookStorage(mongodb),
+	}
+
 	// init services
 	servicesOptions := service.Options{
-		APIs:   apis,
-		Logger: logger,
-		Config: cfg,
+		APIs:     apis,
+		Logger:   logger,
+		Config:   cfg,
+		Storages: storages,
 	}
 
 	services := service.Services{
 		Auth:   service.NewAuthService(&servicesOptions),
 		Upload: service.NewUploadService(&servicesOptions),
+		Book:   service.NewBookService(&servicesOptions),
 	}
 
 	handler := httpcontroller.New(httpcontroller.Options{
@@ -62,7 +78,7 @@ func Run(cfg *config.Config) {
 	}
 
 	// shutdown http server
-	err := httpServer.Shutdown()
+	err = httpServer.Shutdown()
 	if err != nil {
 		logger.Error("app - Run - httpServer.Shutdown", "err", err)
 	}

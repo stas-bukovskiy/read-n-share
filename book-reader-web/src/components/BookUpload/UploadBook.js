@@ -5,6 +5,7 @@ import {FileUploader} from "react-drag-drop-files";
 
 const fileTypes = ["MOBI", "EPUB", "FB2", "PDF", "DOCX", "TXT"];
 const token = localStorage.getItem('token');
+console.log(token);
 
 function UploadBook() {
 
@@ -15,6 +16,9 @@ function UploadBook() {
 
   const [message, setMessage] = useState(null);
   const [messageStatus, setMessageStatus] = useState(null);
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [description, setDescription] = useState('');
 
   const getMessageColor = () => {
     switch (messageStatus) {
@@ -40,8 +44,12 @@ function UploadBook() {
         throw new Error('Please select a file');
       }
 
+
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('title', title);
+      formData.append('author', author);
+      formData.append('description', description);
 
       setMessage('Uploading...');
       setMessageStatus('info');
@@ -50,7 +58,7 @@ function UploadBook() {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
 
@@ -70,6 +78,20 @@ function UploadBook() {
 
   return (
     <div>
+      <form>
+        <label>
+          Title:
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+        </label>
+        <label>
+          Author:
+          <input type="text" value={author} onChange={(e) => setAuthor(e.target.value)} />
+        </label>
+        <label>
+          Description:
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+        </label>
+      </form>
       <FileUploader
         classes="upload-container"
         handleChange={handleChange}

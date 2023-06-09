@@ -51,6 +51,7 @@ func New(options Options) http.Handler {
 
 	setupUserRoutes(routerOptions)
 	setupUploadRoutes(routerOptions)
+	setupBookRoutes(routerOptions)
 
 	return handler
 }
@@ -94,6 +95,8 @@ func newAuthMiddleware(options routerOptions) gin.HandlerFunc {
 		}
 
 		tokenString := tokenStringArr[1]
+		logger.Info("got token", "tokenString", tokenString)
+		logger.Info("request", "request", c.Request.Header)
 
 		userID, err := options.services.Auth.VerifyToken(c, tokenString)
 		if err != nil {
@@ -179,149 +182,3 @@ func corsMiddleware(c *gin.Context) {
 func requestIDMiddleware(c *gin.Context) {
 	c.Set("RequestID", uuid.NewString())
 }
-
-//
-//// httpResponseError provides a base error type for all errors.
-//type httpResponseError struct {
-//	Type          httpErrType `json:"-"`
-//	Message       string      `json:"message"`
-//	Code          string      `json:"code,omitempty"`
-//	Details       interface{} `json:"details,omitempty"`
-//	InvalidFields interface{} `json:"invalidFields,omitempty"`
-//}
-//
-//// httpErrType is used to define error type.
-//type httpErrType string
-//
-//const (
-//	// ErrorTypeServer is an "unexpected" internal server error.
-//	ErrorTypeServer httpErrType = "server"
-//	// ErrorTypeClient is an "expected" business error.
-//	ErrorTypeClient httpErrType = "client"
-//)
-//
-//// Error is used to convert an error to a string.
-//func (e httpResponseError) Error() string {
-//	return fmt.Sprintf("%s: %s", e.Type, e.Message)
-//}
-//
-//// wrapHandler provides unified error handling for all handlers.
-//func wrapHandler(options *routerOptions, handler func(r *http.Request) (interface{}, *httpResponseError)) http.HandlerFunc {
-//	return func(w http.ResponseWriter, r *http.Request) {
-//		logger := options.logger.Named("wrapHandler")
-//
-//		// handle panics
-//		defer func() {
-//			if err := recover(); err != nil {
-//				// get stacktrace
-//				stacktrace, errors := gostackparse.Parse(bytes.NewReader(debug.Stack()))
-//				if len(errors) > 0 || len(stacktrace) == 0 {
-//					logger.Error("get stacktrace errors", "stacktraceErrors", errors, "stacktrace", "unknown", "err", err)
-//				} else {
-//					logger.Error("unhandled error", "err", err, "stacktrace", stacktrace)
-//				}
-//
-//				// return error
-//				w.WriteHeader(http.StatusInternalServerError)
-//				_, err := w.Write([]byte(fmt.Sprintf("internal server error: %v", err)))
-//				if err != nil {
-//					logger.Error("failed to write error", "err", err)
-//				}
-//			}
-//		}()
-//
-//		body, err := handler(r)
-//
-//		// check if middleware
-//		if body == nil && err == nil {
-//			return
-//		}
-//		logger = logger.With("body", body).With("err", err)
-//
-//		// check error
-//		if err != nil {
-//			if err.Type == ErrorTypeServer {
-//				logger.Error("internal server error")
-//				w.WriteHeader(http.StatusInternalServerError)
-//				_, err := w.Write([]byte(fmt.Sprintf("internal server error: %v", err)))
-//				if err != nil {
-//					logger.Error("failed to write error", "err", err)
-//				}
-//			} else {
-//				logger.Info("client error")
-//				w.WriteHeader(http.StatusUnprocessableEntity)
-//
-//				data, err := json.Marshal(err)
-//				if err != nil {
-//					logger.Error("failed to marshal error", "err", err)
-//				}
-//
-//				_, err = w.Write(data)
-//				if err != nil {
-//					logger.Error("failed to write error", "err", err)
-//				}
-//			}
-//			return
-//		}
-//		w.WriteHeader(http.StatusOK)
-//
-//		data, marshalErr := json.Marshal(body)
-//		if marshalErr != nil {
-//			logger.Error("failed to marshal body", "err", err)
-//		}
-//
-//		_, writeErr := w.Write(data)
-//		if writeErr != nil {
-//			logger.Error("failed to write response", "err", err)
-//		}
-//	}
-//}
-//
-//// newAuthMiddleware is used to get auth token from request headers and validate it.
-//func newAuthMiddleware(options *routerOptions) func(http.Handler) http.Handler {
-//	logger := options.logger.Named("newAuthMiddleware")
-//
-//	return func(next http.Handler) http.Handler {
-//		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//			token, err := getAuthToken(r.Header.Get("Authorization"))
-//			if err != nil {
-//				logger.Error(err.Error())
-//				http.Error(w, "Unauthorized", http.StatusUnauthorized)
-//				return
-//			}
-//
-//			userId, err := options.services.Auth.VerifyToken(r.Context(), token)
-//			if err != nil {
-//				if errs.IsExpected(err) {
-//					logger.Info(err.Error())
-//					http.Error(w, err.Error(), http.StatusUnauthorized)
-//				} else {
-//					logger.Error(err.Error())
-//					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-//				}
-//				return
-//			}
-//
-//			ctx := context.WithValue(r.Context(), "userId", userId)
-//			// Use the request with the new context in the next handler
-//			next.ServeHTTP(w, r.WithContext(ctx))
-//		})
-//	}
-//}
-//
-//func getAuthToken(rawToken string) (string, error) {
-//	if rawToken == "" {
-//		return "", fmt.Errorf("empty auth token")
-//	}
-//
-//	// Split Bearer and token
-//	splitRawToken := strings.Split(rawToken, " ")
-//	if len(splitRawToken) != 2 {
-//		return "", fmt.Errorf("malformed auth token")
-//	}
-//
-//	// Get token
-//	token := splitRawToken[1]
-//
-//	return token, nil
-//}
