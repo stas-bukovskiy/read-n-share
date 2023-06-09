@@ -1,0 +1,56 @@
+package database
+
+import (
+	"context"
+	"fmt"
+	"time"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+type MongoDBConfig struct {
+	URI      string
+	Database string
+}
+
+type MongoDB struct {
+	DB *mongo.Database
+}
+
+var _ Database = (*MongoDB)(nil)
+
+func NewMongoDB(cfg MongoDBConfig) (*MongoDB, error) {
+	nosql := &MongoDB{}
+
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(cfg.URI))
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to mongodb: %w", err)
+	}
+
+	nosql.DB = client.Database(cfg.Database)
+
+	return nosql, nil
+}
+
+func (m *MongoDB) Ping(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+	defer cancel()
+
+	err := m.DB.Client().Ping(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("failed to connect")
+	}
+	return nil
+}
+
+func (m *MongoDB) Close() error {
+	if m.DB != nil {
+		err := m.DB.Client().Disconnect(context.Background())
+		if err != nil {
+			return fmt.Errorf("failed to close mongodb connection: %w", err)
+		}
+		return nil
+	}
+	return nil
+}

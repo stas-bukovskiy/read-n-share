@@ -4,6 +4,7 @@ import HomePage from './components/HomePage/HomePage';
 import Login from './components/Login/Login';
 import NavBar from "./components/NavBar/NavBar";
 import UploadBook from "./components/BookUpload/UploadBook";
+import BookDetail from './components/BookDetail/BookDetail';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
         <Route path="/" element={<HomePage/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/upload" element={<UploadBook/>}/>
-        {/* You will add more routes here for the other pages */}
+        <Route path="/book/:id" element={<BookDetail/>}/>
       </Routes>
     </Router>
   );

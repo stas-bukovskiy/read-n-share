@@ -50,9 +50,13 @@ func (u *uploadRoutes) uploadBook(c *gin.Context) (interface{}, *httpErr) {
 		}
 	}(file)
 
-	book, err := u.services.Upload.UploadBook(c.Request.Context(), &service.UploadBookOptions{
+	book, err := u.services.Upload.UploadBook(c, &service.UploadBookOptions{
 		File:   file,
 		Header: header,
+
+		Title:       c.DefaultPostForm("title", ""),
+		Author:      c.DefaultPostForm("author", ""),
+		Description: c.DefaultPostForm("description", ""),
 	})
 	if err != nil {
 		logger.Error("failed to upload book", "err", err)

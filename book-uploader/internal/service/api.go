@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/stas-bukovskiy/read-n-share/book-uploader/internal/entity"
 	"io"
+	"os"
 )
 
 type APIs struct {
@@ -15,6 +16,7 @@ type FileStorage interface {
 	UploadFile(ctx context.Context, key string, reader io.Reader) error
 	DeleteFile(ctx context.Context, key string) error
 	GetFileUrl(ctx context.Context, key string) (string, error)
+	DownloadFile(key string, file *os.File) error
 }
 
 type UserAPI interface {

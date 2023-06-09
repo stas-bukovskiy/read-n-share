@@ -18,9 +18,10 @@ type uploadService struct {
 func NewUploadService(options *Options) *uploadService {
 	return &uploadService{
 		serviceContext: serviceContext{
-			apis:   options.APIs,
-			cfg:    options.Config,
-			logger: options.Logger.Named("UploadService"),
+			apis:     options.APIs,
+			cfg:      options.Config,
+			logger:   options.Logger.Named("UploadService"),
+			storages: options.Storages,
 		},
 	}
 }
@@ -66,8 +67,19 @@ func (s *uploadService) UploadBook(ctx context.Context, options *UploadBookOptio
 
 	book := &entity.Book{
 		ID:          bookId,
-		OwnerUserID: fmt.Sprintf("%s", ctx.Value("userId")),
+		OwnerUserID: fmt.Sprintf("%s", ctx.Value("userID")),
+
+		Title:       options.Title,
+		Author:      options.Author,
+		Description: options.Description,
 	}
+
+	createdBook, err := s.storages.Book.Save(ctx, book)
+	if err != nil {
+		logger.Error("failed to save book", "err", err)
+		return nil, fmt.Errorf("failed to save book: %w", err)
+	}
+	logger = logger.With("book", createdBook)
 
 	logger.Info("book uploaded")
 	return book, nil
@@ -92,12 +104,9 @@ func (s *uploadService) convertToEpub(ctx context.Context, options *UploadBookOp
 		return nil, fmt.Errorf("failed to create file: %w", err)
 	}
 	defer func(out *os.File) {
-		err := out.Close()
+		err := os.Remove(out.Name())
 		if err != nil {
-			if err == os.ErrClosed || err == os.ErrNotExist {
-				return
-			}
-			logger.Error("failed to close file", "err", err)
+			logger.Error("failed to remove file", "err", err)
 		}
 	}(bookFile)
 
