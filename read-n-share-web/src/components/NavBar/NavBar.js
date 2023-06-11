@@ -15,26 +15,35 @@ function NavBar() {
   return (
     <nav className="navbar">
       <img src={logo} alt="Logo" className="navbar-logo" />
-      <ul className="navbar-links">
-        <li>
-          <Link to="/">Home</Link>
-        </li>
-        <li>
-          <Link to="/upload">Upload a Book</Link>
-        </li>
-        <li>
-          <Link to="/reader">Go to Reader</Link>
-        </li>
-        {!token ? (
-          <>
+        <ul className="navbar-links">
             <li>
-              <Link to="/login">Login</Link>
+                <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/register">Register</Link>
+                <Link to="/upload">Upload a Book</Link>
             </li>
-          </>
-        ) : (
+            <li>
+                <Link to="/reader">Go to Reader</Link>
+            </li>
+            <li>
+                <Link to="/wishlist/movie">Movie wishlists</Link>
+            </li>
+            <li>
+                <Link to="/wishlist/book">Book wishlists</Link>
+            </li>
+            <li>
+                <Link to="/wishlist/shared-with-me">Shared with me wishlists</Link>
+            </li>
+            {!token ? (
+                <>
+                    <li>
+                        <Link to="/login">Login</Link>
+                    </li>
+                    <li>
+                        <Link to="/register">Register</Link>
+                    </li>
+                </>
+            ) : (
           <li>
             <button className="logout-button" onClick={handleLogout}>Logout</button>
           </li>
