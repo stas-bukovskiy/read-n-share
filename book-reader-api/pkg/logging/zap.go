@@ -2,9 +2,11 @@ package logging
 
 import (
 	"context"
+	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
+	"time"
 )
 
 // Zap implements the logger interface using zap logging package.
@@ -45,13 +47,13 @@ func New(level string) *zapLogger {
 		},
 	}
 
-	//f, err := os.Create(fmt.Sprintf("logs/log-%s.log", time.Now().Format("2006-02-01-15:4:5")))
-	//if err == nil {
-	//	defer f.Close()
-	//
-	//	config.OutputPaths = append(config.OutputPaths, f.Name())
-	//	config.ErrorOutputPaths = append(config.ErrorOutputPaths, f.Name())
-	//}
+	f, err := os.Create(fmt.Sprintf("logs/log-%s.log", time.Now().Format("2006-02-01-15:4:5")))
+	if err == nil {
+		defer f.Close()
+
+		config.OutputPaths = append(config.OutputPaths, f.Name())
+		config.ErrorOutputPaths = append(config.ErrorOutputPaths, f.Name())
+	}
 
 	// build logger from config
 	logger, _ := config.Build()

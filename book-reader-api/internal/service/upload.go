@@ -64,6 +64,22 @@ func (s *uploadService) UploadBook(ctx context.Context, options *UploadBookOptio
 	}
 	logger = logger.With("book", createdBook)
 
+	var firstChapter string
+	if len(createdBook.Chapters) > 0 {
+		firstChapter = createdBook.Chapters[0]
+	}
+	bookUserSettings, err := s.storages.Book.SaveUserBookSettings(ctx, &entity.BookUserSettings{
+		BookID:   bookId,
+		UserID:   fmt.Sprintf("%s", ctx.Value("userID")),
+		Location: "epubcfi(/6/2[cover]!/6)",
+		Chapter:  firstChapter,
+	})
+	if err != nil {
+		logger.Error("failed to save book user settings", "err", err)
+		return nil, fmt.Errorf("failed to save book user settings: %w", err)
+	}
+	logger = logger.With("bookUserSettings", bookUserSettings)
+
 	logger.Info("book uploaded")
 	return book, nil
 }

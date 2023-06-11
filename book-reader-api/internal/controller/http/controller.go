@@ -52,6 +52,7 @@ func New(options Options) http.Handler {
 	setupUserRoutes(routerOptions)
 	setupUploadRoutes(routerOptions)
 	setupBookRoutes(routerOptions)
+	setupWSRoutes(routerOptions)
 
 	return handler
 }
@@ -83,8 +84,12 @@ func newAuthMiddleware(options routerOptions) gin.HandlerFunc {
 		// Get token and check if empty ("Bearer token")
 		tokenStringRaw := c.GetHeader("Authorization")
 		if tokenStringRaw == "" {
-			logger.Info("empty Authorization header", "tokenStringRaw", tokenStringRaw)
-			return nil, &httpErr{Type: httpErrTypeClient, Message: "empty auth token"}
+			if c.Query("auth") != "" {
+				tokenStringRaw = fmt.Sprintf("Bearer %s", c.Query("auth"))
+			} else {
+				logger.Info("empty Authorization header", "tokenStringRaw", tokenStringRaw)
+				return nil, &httpErr{Type: httpErrTypeClient, Message: "empty auth token"}
+			}
 		}
 
 		// Split Bearer and token

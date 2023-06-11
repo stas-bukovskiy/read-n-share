@@ -23,7 +23,7 @@ function NavBar() {
           <Link to="/upload">Upload a Book</Link>
         </li>
         <li>
-          <Link to="/reader">Go to Reader</Link>
+          <Link to="/books">Books</Link>
         </li>
         {!token ? (
           <>

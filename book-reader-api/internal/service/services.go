@@ -11,9 +11,10 @@ import (
 )
 
 type Services struct {
-	Auth   AuthService
-	Upload UploadService
-	Book   BookService
+	Auth     AuthService
+	Upload   UploadService
+	Book     BookService
+	BookSync BookSyncService
 }
 
 type Options struct {
@@ -45,9 +46,9 @@ type UploadBookOptions struct {
 }
 
 type BookService interface {
-	ListBooks(ctx context.Context, options *BookServiceListOptions) ([]*entity.Book, error)
-	UpdateBook(ctx context.Context, options *UpdateBookOptions) (*entity.Book, error)
-	GetBook(ctx context.Context, bookID, userID string) (*entity.Book, error)
+	ListBooks(ctx context.Context, options *BookServiceListOptions) ([]*entity.UserBook, error)
+	UpdateBook(ctx context.Context, options *UpdateBookOptions) (*entity.UserBook, error)
+	GetBook(ctx context.Context, bookID, userID string) (*entity.UserBook, error)
 	GetBookURL(ctx context.Context, bookID, userID string) (string, error)
 
 	CreateShareLink(ctx context.Context, options CreateShareLinkOptions) (*entity.BookShareLink, error)
@@ -82,6 +83,8 @@ type UpdateBookOptions struct {
 	Title       *string
 	Author      *string
 	Description *string
+	Location    *string
+	Chapter     *string
 }
 
 type BookServiceListOptions struct {
@@ -97,6 +100,12 @@ type CreateShareLinkOptions struct {
 type ListShareLinksOptions struct {
 	BookID *string
 	UserID *string
+}
+
+type BookSyncService interface {
+	Connect(ctx context.Context, userID, bookID string) (chan *entity.BookSync, *entity.BookSync, error)
+	Receive(ctx context.Context, updatedSettings *entity.BookUserSettings) error
+	Close(ctx context.Context, userID, bookID string) error
 }
 
 // AuthService is used to authenticate user.

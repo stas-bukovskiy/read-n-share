@@ -7,6 +7,7 @@ import (
 	"github.com/stas-bukovskiy/read-n-share/book-reader-api/pkg/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type bookStorage struct {
@@ -155,4 +156,41 @@ func (b *bookStorage) DeleteShareLink(ctx context.Context, linkID string) error 
 	}
 
 	return nil
+}
+
+func (b *bookStorage) SaveUserBookSettings(ctx context.Context, userBookSettings *entity.BookUserSettings) (*entity.BookUserSettings, error) {
+	filter := bson.D{{"user_id", userBookSettings.UserID}, {"book_id", userBookSettings.BookID}}
+	opts := options.Update().SetUpsert(true)
+	update := bson.M{
+		"$set": userBookSettings,
+	}
+
+	_, err := b.DB.Collection("user-books-settings").UpdateOne(ctx, filter, update, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	var createdUserBookSettings *entity.BookUserSettings
+	err = b.DB.Collection("user-books-settings").
+		FindOne(ctx, filter).
+		Decode(&createdUserBookSettings)
+	if err != nil {
+		return nil, err
+	}
+
+	return createdUserBookSettings, nil
+}
+
+func (b *bookStorage) GetUserBookSettings(ctx context.Context, bookID, userID string) (*entity.BookUserSettings, error) {
+	filter := bson.D{{"user_id", userID}, {"book_id", bookID}}
+	settings := &entity.BookUserSettings{}
+	err := b.DB.Collection("user-books-settings").FindOne(ctx, filter).Decode(settings)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return settings, nil
 }

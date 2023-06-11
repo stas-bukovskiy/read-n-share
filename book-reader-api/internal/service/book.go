@@ -23,7 +23,7 @@ func NewBookService(options *Options) BookService {
 	}
 }
 
-func (s *bookService) ListBooks(ctx context.Context, options *BookServiceListOptions) ([]*entity.Book, error) {
+func (s *bookService) ListBooks(ctx context.Context, options *BookServiceListOptions) ([]*entity.UserBook, error) {
 	logger := s.logger.
 		Named("ListBooks").
 		WithContext(ctx).
@@ -38,6 +38,20 @@ func (s *bookService) ListBooks(ctx context.Context, options *BookServiceListOpt
 	}
 	logger = logger.With("books", books)
 
+	var userBooks []*entity.UserBook
+	for _, book := range books {
+		settings, err := s.storages.Book.GetUserBookSettings(ctx, book.ID, options.UserID)
+		if err != nil {
+			logger.Error("failed to get user book settings", "err", err)
+			return nil, fmt.Errorf("failed to get user book settings: %w", err)
+		}
+		userBooks = append(userBooks, &entity.UserBook{
+			Book:     book,
+			Settings: settings,
+			IsGuest:  false,
+		})
+	}
+
 	guestBooks, err := s.storages.Book.List(ctx, &BookStorageListFilter{
 		GuestUserID: &options.UserID,
 	})
@@ -47,50 +61,64 @@ func (s *bookService) ListBooks(ctx context.Context, options *BookServiceListOpt
 	}
 	logger = logger.With("guestBooks", guestBooks)
 
+	for _, book := range guestBooks {
+		settings, err := s.storages.Book.GetUserBookSettings(ctx, book.ID, options.UserID)
+		if err != nil {
+			logger.Error("failed to get user book settings", "err", err)
+			return nil, fmt.Errorf("failed to get user book settings: %w", err)
+		}
+		userBooks = append(userBooks, &entity.UserBook{
+			Book:     book,
+			Settings: settings,
+			IsGuest:  true,
+		})
+	}
+
 	books = append(books, guestBooks...)
 
 	logger.Info("books listed")
-	return books, nil
+	return userBooks, nil
 }
 
-func (s *bookService) UpdateBook(ctx context.Context, options *UpdateBookOptions) (*entity.Book, error) {
+func (s *bookService) UpdateBook(ctx context.Context, options *UpdateBookOptions) (*entity.UserBook, error) {
 	logger := s.logger.
 		Named("UpdateBook").
 		WithContext(ctx).
 		With("options", options)
 
-	book, err := s.GetBook(ctx, options.BookID, options.UserID)
+	userBook, err := s.GetBook(ctx, options.BookID, options.UserID)
 	if err != nil {
 		return nil, err
 	}
 
-	if book.OwnerUserID != options.UserID {
-		logger.Info("book not owned")
+	if userBook.Book.OwnerUserID != options.UserID {
+		logger.Info("userBook not owned")
 		return nil, ErrBookNotOwned
 	}
 
 	if options.Title != nil {
-		book.Title = *options.Title
+		userBook.Book.Title = *options.Title
 	}
 	if options.Author != nil {
-		book.Author = *options.Author
+		userBook.Book.Author = *options.Author
 	}
 	if options.Description != nil {
-		book.Description = *options.Description
+		userBook.Book.Description = *options.Description
 	}
 
-	book, err = s.storages.Book.Update(ctx, book)
+	updatedBook, err := s.storages.Book.Update(ctx, userBook.Book)
 	if err != nil {
-		logger.Error("failed to save book", "err", err)
-		return nil, fmt.Errorf("failed to save book: %w", err)
+		logger.Error("failed to save userBook", "err", err)
+		return nil, fmt.Errorf("failed to save userBook: %w", err)
 	}
-	logger = logger.With("book", book)
+	logger = logger.With("updatedBook", updatedBook)
+	userBook.Book = updatedBook
 
-	logger.Info("book updated")
-	return book, nil
+	logger.Info("userBook updated")
+	return userBook, nil
 }
 
-func (s *bookService) GetBook(ctx context.Context, bookID, userID string) (*entity.Book, error) {
+func (s *bookService) GetBook(ctx context.Context, bookID, userID string) (*entity.UserBook, error) {
 	logger := s.logger.
 		Named("GetBook").
 		WithContext(ctx).
@@ -112,8 +140,29 @@ func (s *bookService) GetBook(ctx context.Context, bookID, userID string) (*enti
 		return nil, ErrGetBookNotAllowed
 	}
 
+	settings, err := s.storages.Book.GetUserBookSettings(ctx, book.ID, userID)
+	if err != nil {
+		logger.Error("failed to get user book settings", "err", err)
+		return nil, fmt.Errorf("failed to get user book settings: %w", err)
+	}
+	if settings == nil {
+		settings = &entity.BookUserSettings{
+			BookID:   book.ID,
+			UserID:   userID,
+			Location: "",
+			Chapter:  "N/A",
+		}
+	}
+	logger = logger.With("settings", settings)
+
+	userBook := &entity.UserBook{
+		Book:     book,
+		Settings: settings,
+		IsGuest:  book.OwnerUserID != userID,
+	}
+
 	logger.Info("book retrieved")
-	return book, nil
+	return userBook, nil
 }
 
 func (s *bookService) GetBookURL(ctx context.Context, bookID, userID string) (string, error) {
@@ -128,7 +177,7 @@ func (s *bookService) GetBookURL(ctx context.Context, bookID, userID string) (st
 	}
 	logger = logger.With("book", book)
 
-	url, err := s.apis.File.GetFileUrl(ctx, book.ID)
+	url, err := s.apis.File.GetFileUrl(ctx, book.Book.ID)
 	if err != nil {
 		logger.Error("failed to get url", "err", err)
 		return "", fmt.Errorf("failed to get url: %w", err)
@@ -151,14 +200,14 @@ func (s *bookService) CreateShareLink(ctx context.Context, options CreateShareLi
 	}
 	logger = logger.With("book", book)
 
-	if book.OwnerUserID != options.UserID {
+	if book.Book.OwnerUserID != options.UserID {
 		logger.Info("user is not owner")
 		return nil, ErrCreateShareLinkNotAllowed
 	}
 
 	shareLink, err := s.storages.Book.CreateShareLink(ctx, &entity.BookShareLink{
 		ID:          uuid.NewString(),
-		BookID:      book.ID,
+		BookID:      book.Book.ID,
 		OwnerUserID: options.UserID,
 		ExpiresAt:   options.ExpiresAt,
 	})
@@ -189,7 +238,7 @@ func (s *bookService) ListShareLinks(ctx context.Context, userID string, options
 		}
 		logger = logger.With("book", book)
 
-		if book.OwnerUserID != userID {
+		if book.Book.OwnerUserID != userID {
 			logger.Info("user is not owner")
 			return nil, ErrListShareLinksNotAllowed
 		}
@@ -293,13 +342,4 @@ func (s *bookService) ShareBook(ctx context.Context, linkID, userID string) (*en
 
 	logger.Info("book shared")
 	return book, nil
-}
-
-func containsString(list []string, str string) bool {
-	for _, s := range list {
-		if s == str {
-			return true
-		}
-	}
-	return false
 }

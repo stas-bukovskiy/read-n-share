@@ -1,0 +1,22 @@
+.book-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.book-table th, .book-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.book-table th {
+    background-color: #f2f2f2;
+}
+
+.book-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.book-table tr:hover {
+    background-color: #ddd;
+}

@@ -1,18 +1,12 @@
 import React, {useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import {Navigate, useNavigate} from 'react-router-dom';
 import './UploadBook.css';
 import {FileUploader} from "react-drag-drop-files";
 
 const fileTypes = ["MOBI", "EPUB", "FB2", "PDF", "DOCX", "TXT"];
-const token = localStorage.getItem('token');
-console.log(token);
 
 function UploadBook() {
-
-  const navigation = useNavigate();
-  // if (!token) {
-  //   navigation('/login');
-  // }
+  const token = localStorage.getItem('token');
 
   const [message, setMessage] = useState(null);
   const [messageStatus, setMessageStatus] = useState(null);
@@ -75,6 +69,10 @@ function UploadBook() {
       setMessageStatus('error');
     }
   };
+
+  if (!token) {
+    return <Navigate to={'/login'}/>
+  }
 
   return (
     <div>

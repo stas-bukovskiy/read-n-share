@@ -36,13 +36,14 @@ func setupBookRoutes(options routerOptions) {
 	shareLinkGroup.Use(newAuthMiddleware(options))
 	{
 		shareLinkGroup.POST("/", errorHandler(options, bookRoutes.createShareLink))
+		shareLinkGroup.GET("/list", errorHandler(options, bookRoutes.listShareLinks))
 		shareLinkGroup.DELETE("/:id", errorHandler(options, bookRoutes.deleteShareLink))
 		shareLinkGroup.POST("/:id/share", errorHandler(options, bookRoutes.shareBook))
 	}
 }
 
 type listBooksResponseBody struct {
-	Books []*entity.Book `json:"books"`
+	Books []*entity.UserBook `json:"books"`
 }
 
 func (b *bookRoutes) listBooks(c *gin.Context) (interface{}, *httpErr) {
@@ -68,7 +69,7 @@ func (b *bookRoutes) listBooks(c *gin.Context) (interface{}, *httpErr) {
 }
 
 type getBookResponseBody struct {
-	Book *entity.Book `json:"book"`
+	Book *entity.UserBook `json:"book"`
 }
 
 func (b *bookRoutes) getBook(c *gin.Context) (interface{}, *httpErr) {
@@ -139,10 +140,12 @@ type updateBookRequestBody struct {
 	Title       *string `json:"title"`
 	Author      *string `json:"author"`
 	Description *string `json:"description"`
+	Location    *string `json:"location"`
+	Chapter     *string `json:"chapter"`
 }
 
 type updateBookResponseBody struct {
-	Book *entity.Book `json:"book"`
+	Book *entity.UserBook `json:"book"`
 }
 
 func (b *bookRoutes) updateBook(c *gin.Context) (interface{}, *httpErr) {
@@ -174,6 +177,8 @@ func (b *bookRoutes) updateBook(c *gin.Context) (interface{}, *httpErr) {
 		Title:       body.Title,
 		Author:      body.Author,
 		Description: body.Description,
+		Location:    body.Location,
+		Chapter:     body.Chapter,
 	})
 	if err != nil {
 		logger.Error("failed to update book", "err", err)

@@ -45,9 +45,10 @@ func Run(cfg *config.Config) {
 	}
 
 	services := service.Services{
-		Auth:   service.NewAuthService(&servicesOptions),
-		Upload: service.NewUploadService(&servicesOptions),
-		Book:   service.NewBookService(&servicesOptions),
+		Auth:     service.NewAuthService(&servicesOptions),
+		Upload:   service.NewUploadService(&servicesOptions),
+		Book:     service.NewBookService(&servicesOptions),
+		BookSync: service.NewBookSyncService(&servicesOptions),
 	}
 
 	handler := httpcontroller.New(httpcontroller.Options{

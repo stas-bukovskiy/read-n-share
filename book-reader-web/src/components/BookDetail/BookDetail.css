@@ -1,0 +1,166 @@
+.info-table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-collapse: collapse;
+}
+
+.info-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.info-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.info-table tr:hover {
+    background-color: #ddd;
+}
+
+.info-table td:first-child {
+    font-weight: bold;
+    width: 20%;
+}
+
+.info-table td:nth-child(2) {
+    width: 80%;
+}
+
+
+/* Styles for the book buttons */
+.book-buttons {
+    display: flex;
+    justify-content: left;
+    margin-bottom: 20px;
+}
+
+.book-buttons button {
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: auto;
+}
+
+.book-buttons button:hover {
+    background-color: #0056b3;
+}
+
+/* Styles for the reader container */
+.reader-container {
+    background-color: #fafafa;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Styles for the modals */
+.modal {
+    position: fixed;
+    z-index: 1000; /* Increase z-index */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%;
+}
+
+.modal-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.modal-content th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    background-color: #f2f2f2;
+}
+
+.modal-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.modal-content button {
+    margin-top: 1em;
+    padding: 8px 16px;
+    background-color: #007BFF;
+    border: none;
+    cursor: pointer;
+}
+
+/* additional CSS */
+.modal-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-form input[type="number"] {
+    width: 60%;
+    padding: 10px;
+    font-size: 1.2em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal-form button {
+    width: 35%;
+    padding: 10px;
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+}
+
+.modal-content form button:hover {
+    background-color: #0056b3;
+}
+
+/* Styles for the links list */
+.links-list {
+    list-style: none;
+    padding: 0;
+}
+
+.links-list li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+.links-list li:last-child {
+    border-bottom: none;
+}
+
+.links-list button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.links-list button:hover {
+    background-color: #c82333;
+}
