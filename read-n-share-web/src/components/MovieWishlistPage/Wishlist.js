@@ -11,7 +11,6 @@ const WishlistComponent = ({wishlist}) => {
             <p className="mb-2"><strong>Item IDs:</strong> {wishlist.itemIds.join(', ')}</p>
             <p className="mb-2"><strong>Item Type:</strong> {wishlist.itemType}</p>
             <p className="mb-2"><strong>Wishlist Type:</strong> {wishlist.wishlistType}</p>
-            {/* Additional fields can be displayed here */}
         </div>
     );
 };
