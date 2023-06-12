@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import AccessRightsComponent from "./AccessRightComponent";
 
 const MovieInfo = ({itemId}) => {
@@ -25,7 +25,9 @@ const MovieInfo = ({itemId}) => {
 
     return (
         <div>
-            <h2>{movie.title}</h2>
+            <Link to={`/movies/${itemId}`} className="text-decoration-none">
+                <h2>{movie.title}</h2>
+            </Link>
             <p>{movie.plot}</p>
             {/* Render other movie information */}
         </div>

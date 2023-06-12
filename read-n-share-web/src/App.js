@@ -9,6 +9,7 @@ import WishlistsPage from './components/MovieWishlistPage/WishlistsPage';
 import CreateWishlistForm from './components/MovieWishlistPage/CreateWishlistForm';
 import WishlistPage from "./components/MovieWishlistPage/WishlistPage";
 import EditWishlist from "./components/MovieWishlistPage/EditWishlist";
+import MoviePage from "./components/Movie/MoviePage";
 
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
                 <Route path="/create-wishlist" element={<CreateWishlistForm/>}/>
                 <Route path="/wishlists/:wishlistId" element={<WishlistPage/>}></Route>
                 <Route path="/wishlists/edit/:wishlistId" element={<EditWishlist/>}></Route>
+
+                <Route path="/movies/:imdbId" element={<MoviePage/>}></Route>
             </Routes>
         </Router>
     );
