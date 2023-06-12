@@ -10,6 +10,15 @@ services:
     networks:
       - read-n-share-network
 
+  book-reader-api:
+    container_name: read-n-share-book-reader-api
+    build:
+      context: ./book-reader-api
+    ports:
+      - "8002:8002"
+    networks:
+      - read-n-share-network
+
   item-finder:
     container_name: read-n-share-item-finder
     build:
