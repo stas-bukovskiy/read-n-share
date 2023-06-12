@@ -53,19 +53,12 @@ public class RatingServiceImpl implements RatingService {
     public Mono<UserRating> createRating(CreateUserRatingRequest request) {
         return verifyItemService.verify(request.getItemId(), parseItemType(request.getItemType()))
                 .flatMap(verified -> userService.getCurrentUserId())
-                .flatMap(userId -> userRatingRepository.existsByItemIdAndUserId(request.getItemId(), userId)
-                        .handle((isExist, sink) -> {
-                            if (isExist) {
-                                sink.error(new RatingException("rating already exists for item <" + request.getItemId() + ">"));
-                                return;
-                            }
-                            UserRating userRating = UserRating.builder()
-                                    .itemId(request.getItemId())
-                                    .userId(userId)
-                                    .rating(request.getRating())
-                                    .build();
-                            sink.next(userRating);
-                        }))
+                .flatMap(userId -> userRatingRepository.findByItemIdAndUserId(request.getItemId(), userId)
+                        .switchIfEmpty(Mono.just(UserRating.builder()
+                                .itemId(request.getItemId())
+                                .userId(userId)
+                                .rating(request.getRating())
+                                .build())))
                 .cast(UserRating.class)
                 .flatMap(userRatingRepository::save)
                 .doOnSuccess(userRating -> log.debug("successfully added user rating: {}", request))

@@ -1,0 +1,14 @@
+.container-fluid {
+    background-color: #ffffff; /* Replace with your custom background color */
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-wrapper {
+    width: 50%;
+    background-color: #f3f3f3;
+    padding: 50px;
+    border-radius: 20px;
+}

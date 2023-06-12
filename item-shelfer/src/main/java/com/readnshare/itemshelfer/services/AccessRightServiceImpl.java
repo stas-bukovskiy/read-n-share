@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -54,6 +53,7 @@ public class AccessRightServiceImpl implements AccessRightService {
                     } else if (rightToaAdd.getPermission().equals(AccessRight.Permission.OWNER)) {
                         sink.error(new AccessRightConflictException("Only one user can have owner permission"));
                     } else {
+                        existedUserAccessRight.ifPresent(accessRight -> wishlist.getRights().remove(accessRight));
                         wishlist.getRights().add(rightToaAdd);
                         sink.next(wishlist);
                     }
@@ -74,6 +74,8 @@ public class AccessRightServiceImpl implements AccessRightService {
                         sink.error(new AccessRightConflictException("User with id <" + rightToUpdate.getUserId() + "> does not have any permission to wishlist with id <" + wishlistId + ">"));
                     } else if (userAccessRightToUpdate.get().getPermission().equals(AccessRight.Permission.OWNER)) {
                         sink.error(new AccessRightConflictException("Owner can not update their own permission"));
+                    } else if (rightToUpdate.getPermission().equals(AccessRight.Permission.OWNER)) {
+                        sink.error(new AccessRightConflictException("Only one user can have owner permission"));
                     } else {
                         wishlist.getRights().remove(userAccessRightToUpdate.get());
                         wishlist.getRights().add(rightToUpdate);
@@ -126,7 +128,7 @@ public class AccessRightServiceImpl implements AccessRightService {
 
     private Optional<AccessRight> findAccessRightByUserId(Wishlist wishlist, String userId) {
         return wishlist.getRights().stream()
-                .filter(right -> Objects.equals(right.getUserId(), userId))
+                .filter(right -> right.getUserId().equals(userId))
                 .findAny();
     }
 }

@@ -10,7 +10,14 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import reactor.core.publisher.Mono;
+
+import java.util.Collections;
+import java.util.List;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -49,6 +56,31 @@ public class SecurityConfig {
                 .exceptionHandling()
                 .authenticationEntryPoint((swe, e) -> Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED))).accessDeniedHandler((swe, e) -> Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN))).and()
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfiguration() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.applyPermitDefaultValues();
+        corsConfig.setAllowCredentials(true);
+        corsConfig.addAllowedMethod("GET");
+        corsConfig.addAllowedMethod("POST");
+        corsConfig.addAllowedMethod("OPTION");
+        corsConfig.addAllowedMethod("PUT");
+        corsConfig.addAllowedMethod("DELETE");
+        corsConfig.setAllowCredentials(false);
+        corsConfig.setAllowedOriginPatterns(Collections.singletonList(CorsConfiguration.ALL));
+        corsConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        corsConfig.setExposedHeaders(List.of("X-Get-Header"));
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+        return source;
+    }
+
+    @Bean
+    public CorsWebFilter corsWebFilter() {
+        return new CorsWebFilter(corsConfiguration());
     }
 
 }
