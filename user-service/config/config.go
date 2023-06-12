@@ -9,7 +9,6 @@ import (
 type (
 	// Config - represent top level application configuration object.
 	Config struct {
-		AWS
 		App
 		MongoDB
 	}
@@ -20,13 +19,8 @@ type (
 		HMACSecret string `env:"USER_SERVICE_SECRET" env-default:"bh43yGXui32he7i3iFgq3linjK"`
 	}
 
-	AWS struct {
-		S3Bucket string `env:"GD_AWS_S3_BUCKET" env-default:"files-controller-staging-godrive-evokia-com"`
-		Region   string `env:"GD_AWS_REGION" env-default:"us-east-2"`
-	}
-
 	MongoDB struct {
-		URI      string `env:"MONGODB_URI" env-default:"mongodb+srv://vdpolishchuk:Lxv2eJbM0cSydOJI@read-n-share-db.wlxut51.mongodb.net/?retryWrites=true&w=majority"`
+		URI      string `env:"MONGODB_URI" env-default:"-"`
 		Database string `env:"MONGODB_DATABASE" env-default:"user"`
 	}
 )

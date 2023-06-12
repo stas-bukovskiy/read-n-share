@@ -27,12 +27,12 @@ type (
 	AWS struct {
 		S3Bucket           string `env:"BOOKS_AWS_S3_BUCKET" env-default:"read-n-share-books-bucket"`
 		Region             string `env:"BOOKS_AWS_REGION" env-default:"us-east-1"`
-		IAMUserAccessToken string `env:"BOOKS_AWS_IAM_USER_ACCESS_TOKEN" env-default:"AKIAX3DUFRKCNHEVV4M2"`
-		IAMUserSecretKey   string `env:"BOOKS_AWS_IAM_USER_SECRET_KEY" env-default:"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"`
+		IAMUserAccessToken string `env:"BOOKS_AWS_IAM_USER_ACCESS_TOKEN" env-default:""`
+		IAMUserSecretKey   string `env:"BOOKS_AWS_IAM_USER_SECRET_KEY" env-default:""`
 	}
 
 	MongoDB struct {
-		URI      string `env:"MONGODB_URI" env-default:"mongodb+srv://vdpolishchuk:Lxv2eJbM0cSydOJI@read-n-share-db.wlxut51.mongodb.net/?retryWrites=true&w=majority"`
+		URI      string `env:"MONGODB_URI" env-default:""`
 		Database string `env:"MONGODB_DATABASE" env-default:"user"`
 	}
 )
