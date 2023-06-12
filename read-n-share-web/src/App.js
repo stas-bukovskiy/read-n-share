@@ -11,29 +11,34 @@ import WishlistPage from "./components/Wishlist/WishlistPage";
 import EditWishlist from "./components/Wishlist/EditWishlist";
 import MoviePage from "./components/Movie/MoviePage";
 import BookPage from "./components/Book/BookPage";
-
+import BookList from "./components/BookList/BookList";
+import ShareLinkHandler from "./components/ShareLinkHandler/ShareLinkHandler";
 
 function App() {
-    return (
-        <Router>
-            <NavBar/>
-            <Routes>
-                <Route path="/" element={<HomePage/>}/>
-                <Route path="/login" element={<Login/>}/>
-                <Route path="/upload" element={<UploadBook/>}/>
-                <Route path="/book/:id" element={<BookDetail/>}/>
-                <Route path="/wishlist/movie" element={<WishlistsPage wishlistUri="?itemType=MOVIE"/>}/>
-                <Route path="/wishlist/book" element={<WishlistsPage wishlistUri="?itemType=BOOK"/>}/>
-                <Route path="/wishlist/shared-with-me" element={<WishlistsPage wishlistUri="/shared-with-me"/>}/>
-                <Route path="/create-wishlist" element={<CreateWishlistPage/>}/>
-                <Route path="/wishlists/:wishlistId" element={<WishlistPage/>}></Route>
-                <Route path="/wishlists/edit/:wishlistId" element={<EditWishlist/>}></Route>
+  return (
+    <Router>
+      <NavBar/>
+      <Routes>
+        <Route path="/" element={<HomePage/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/upload" element={<UploadBook/>}/>
+        <Route path="/book/:id" element={<BookDetail/>}/>
+        <Route path="/book/:id/share-link/:linkID" element={<ShareLinkHandler/>}/>
+        <Route path="/books" element={<BookList/>}/>
 
-                <Route path="/movies/:imdbId" element={<MoviePage/>}></Route>
-                <Route path="/books/:googleBooksId" element={<BookPage/>}></Route>
-            </Routes>
-        </Router>
-    );
+        <Route path="/wishlist/movie" element={<WishlistsPage wishlistUri="?itemType=MOVIE"/>}/>
+        <Route path="/wishlist/book" element={<WishlistsPage wishlistUri="?itemType=BOOK"/>}/>
+        <Route path="/wishlist/shared-with-me" element={<WishlistsPage wishlistUri="/shared-with-me"/>}/>
+        <Route path="/create-wishlist" element={<CreateWishlistPage/>}/>
+        <Route path="/wishlists/:wishlistId" element={<WishlistPage/>}></Route>
+        <Route path="/wishlists/edit/:wishlistId" element={<EditWishlist/>}></Route>
+
+        <Route path="/movies/:imdbId" element={<MoviePage/>}></Route>
+        <Route path="/books/:googleBooksId" element={<BookPage/>}></Route>
+
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
