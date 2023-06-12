@@ -129,7 +129,7 @@ ReadMessagesLoop:
 			msg := &entity.BookUserSettings{}
 			marshalErr := json.Unmarshal(data, msg)
 			if marshalErr != nil {
-				logger.Info("failed to unmarshal message", "err", err)
+				logger.Info("failed to unmarshal message", "err", err, "data", string(data))
 				continue ReadMessagesLoop
 			}
 

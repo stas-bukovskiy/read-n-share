@@ -20,6 +20,14 @@ type FileStorage interface {
 type UserAPI interface {
 	VerifyToken(ctx context.Context, token string) (*entity.User, error)
 	Login(ctx context.Context, email, password string) (*LoginOutput, error)
+
+	GetUser(ctx context.Context, options *GetUserOptions) (*entity.User, error)
+}
+
+type GetUserOptions struct {
+	ID       *string
+	Email    *string
+	Username *string
 }
 
 type LoginOutput struct {

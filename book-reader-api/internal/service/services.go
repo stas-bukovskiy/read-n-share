@@ -51,6 +51,8 @@ type BookService interface {
 	GetBook(ctx context.Context, bookID, userID string) (*entity.UserBook, error)
 	GetBookURL(ctx context.Context, bookID, userID string) (string, error)
 
+	ListBookUserSettings(ctx context.Context, bookID, userID string) ([]*entity.BookUserSettings, error)
+
 	CreateShareLink(ctx context.Context, options CreateShareLinkOptions) (*entity.BookShareLink, error)
 	ListShareLinks(ctx context.Context, userID string, options *ListShareLinksOptions) ([]*entity.BookShareLink, error)
 	DeleteShareLink(ctx context.Context, linkID, userID string) error

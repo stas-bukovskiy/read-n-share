@@ -55,10 +55,24 @@ func (b *bookSyncService) Connect(ctx context.Context, userID, bookID string) (c
 	}
 	if userSettings == nil {
 		userSettings = &entity.BookUserSettings{
-			BookID:   book.ID,
-			UserID:   userID,
-			Progress: 0,
-			Colour:   generateRandomHexColor(),
+			BookID:     book.ID,
+			UserID:     userID,
+			Progress:   0,
+			Colour:     generateRandomHexColor(),
+			Selections: make([]*entity.BookUserSelection, 0),
+		}
+
+		user, err := b.apis.User.GetUser(ctx, &GetUserOptions{
+			ID: &userID,
+		})
+		if err != nil {
+			logger.Error("failed to get user", "err", err)
+			return nil, nil, err
+		}
+		if user == nil {
+			logger.Info("user not found")
+		} else {
+			userSettings.Username = user.Username
 		}
 	}
 	logger = logger.With("userSettings", userSettings)
@@ -135,7 +149,14 @@ func (b *bookSyncService) Receive(ctx context.Context, updatedSettings *entity.B
 
 	for _, user := range bookSync.Users {
 		if user.UserSettings.UserID == updatedSettings.UserID {
-			user.UserSettings = updatedSettings
+			user.UserSettings.Location = updatedSettings.Location
+			user.UserSettings.Chapter = updatedSettings.Chapter
+			user.UserSettings.Progress = updatedSettings.Progress
+
+			if updatedSettings.Selections != nil {
+				user.UserSettings.Selections = updatedSettings.Selections
+			}
+
 			connections.Store(updatedSettings.BookID, bookSync)
 			break
 		}
@@ -143,7 +164,7 @@ func (b *bookSyncService) Receive(ctx context.Context, updatedSettings *entity.B
 
 	if !bookSync.IsTicking {
 		go func(bs *entity.BookSync) {
-			bs.Ticker = time.NewTicker(2 * time.Second)
+			bs.Ticker = time.NewTicker(500 * time.Millisecond)
 			bs.IsTicking = true
 			connections.Store(updatedSettings.BookID, bs)
 
@@ -202,6 +223,10 @@ func (b *bookSyncService) Close(ctx context.Context, userID, bookID string) erro
 	} else {
 		logger.Info("users still connected, updating connection")
 		connections.Store(bookID, bookSync)
+
+		for _, user := range bookSync.Users {
+			user.UpdatesChannel <- bookSync
+		}
 	}
 
 	logger.Info("connection closed")

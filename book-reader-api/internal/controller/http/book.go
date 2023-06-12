@@ -30,6 +30,8 @@ func setupBookRoutes(options routerOptions) {
 		group.GET("/:id/url", errorHandler(options, bookRoutes.getBookURL))
 		group.PUT("/:id", errorHandler(options, bookRoutes.updateBook))
 
+		group.GET("/:id/settings", errorHandler(options, bookRoutes.getUserSettings))
+
 	}
 
 	shareLinkGroup := group.Group("/share-link")
@@ -69,7 +71,8 @@ func (b *bookRoutes) listBooks(c *gin.Context) (interface{}, *httpErr) {
 }
 
 type getBookResponseBody struct {
-	Book *entity.UserBook `json:"book"`
+	Book   *entity.UserBook `json:"book"`
+	UserId string           `json:"userId"`
 }
 
 func (b *bookRoutes) getBook(c *gin.Context) (interface{}, *httpErr) {
@@ -98,7 +101,8 @@ func (b *bookRoutes) getBook(c *gin.Context) (interface{}, *httpErr) {
 
 	logger.Info("book retrieved")
 	return &getBookResponseBody{
-		Book: book,
+		Book:   book,
+		UserId: c.Value("userID").(string),
 	}, nil
 }
 
@@ -193,6 +197,38 @@ func (b *bookRoutes) updateBook(c *gin.Context) (interface{}, *httpErr) {
 	logger.Info("book updated")
 	return &updateBookResponseBody{
 		Book: book,
+	}, nil
+}
+
+type getUserSettingsResponseBody struct {
+	Settings []*entity.BookUserSettings `json:"settings"`
+}
+
+func (b *bookRoutes) getUserSettings(c *gin.Context) (interface{}, *httpErr) {
+	logger := b.logger.Named("getUserSettings").WithContext(c.Request.Context())
+
+	settings, err := b.services.Book.ListBookUserSettings(c.Request.Context(), c.Param("id"), c.Value("userID").(string))
+	if err != nil {
+		if errs.IsExpected(err) {
+			logger.Info("failed to list user settings", "err", err)
+			return nil, &httpErr{
+				Type:    httpErrTypeClient,
+				Message: "failed to list user settings",
+				Details: err.Error(),
+			}
+		}
+		logger.Error("failed to list user settings", "err", err)
+		return nil, &httpErr{
+			Type:    httpErrTypeServer,
+			Message: "failed to list user settings",
+			Details: err.Error(),
+		}
+	}
+	logger = logger.With("settings", settings)
+
+	logger.Info("user settings retrieved")
+	return &getUserSettingsResponseBody{
+		Settings: settings,
 	}, nil
 }
 

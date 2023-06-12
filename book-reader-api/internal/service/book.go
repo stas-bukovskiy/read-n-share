@@ -188,6 +188,43 @@ func (s *bookService) GetBookURL(ctx context.Context, bookID, userID string) (st
 	return url, nil
 }
 
+func (s *bookService) ListBookUserSettings(ctx context.Context, bookID, userID string) ([]*entity.BookUserSettings, error) {
+	logger := s.logger.
+		Named("ListBookUserSettings").
+		WithContext(ctx).
+		With("bookID", bookID, "userID", userID)
+
+	book, err := s.GetBook(ctx, bookID, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var settings []*entity.BookUserSettings
+	ownerSettings, err := s.storages.Book.GetUserBookSettings(ctx, bookID, book.Book.OwnerUserID)
+	if err != nil {
+		logger.Error("failed to get owner settings", "err", err)
+		return nil, fmt.Errorf("failed to get owner settings: %w", err)
+	}
+	if ownerSettings != nil {
+		settings = append(settings, ownerSettings)
+	}
+
+	for _, guestID := range book.Book.GuestsIDs {
+		guestSettings, err := s.storages.Book.GetUserBookSettings(ctx, bookID, guestID)
+		if err != nil {
+			logger.Error("failed to get guest settings", "err", err)
+			return nil, fmt.Errorf("failed to get guest settings: %w", err)
+		}
+		if guestSettings != nil {
+			settings = append(settings, guestSettings)
+		}
+	}
+	logger = logger.With("settings", settings)
+
+	logger.Info("settings retrieved")
+	return settings, nil
+}
+
 func (s *bookService) CreateShareLink(ctx context.Context, options CreateShareLinkOptions) (*entity.BookShareLink, error) {
 	logger := s.logger.
 		Named("CreateShareLink").

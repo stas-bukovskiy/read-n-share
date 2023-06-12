@@ -27,6 +27,9 @@ type BookUserSettings struct {
 	Chapter  string `json:"chapter" bson:"chapter"`
 	Progress int    `json:"progress" bson:"progress"`
 	Colour   string `json:"colour" bson:"colour"`
+	Username string `json:"username" bson:"username"`
+
+	Selections []*BookUserSelection `json:"selections" bson:"selections"`
 }
 
 type BookSync struct {
@@ -40,6 +43,14 @@ type BookSync struct {
 type BookSyncConnectedUsers struct {
 	UserSettings   *BookUserSettings `json:"user_settings" bson:"user_settings"`
 	UpdatesChannel chan *BookSync    `json:"-" bson:"-"`
+}
+
+type BookUserSelection struct {
+	UserID   string `json:"user_id" bson:"user_id"`
+	BookID   string `json:"book_id" bson:"book_id"`
+	CFIRange string `json:"cfi_range" bson:"cfi_range"`
+	Text     string `json:"text" bson:"text"`
+	UserText string `json:"user_text" bson:"user_text"`
 }
 
 type BookShareLink struct {
