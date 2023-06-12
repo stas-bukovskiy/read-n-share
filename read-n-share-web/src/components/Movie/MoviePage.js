@@ -3,6 +3,11 @@ import axios from 'axios';
 import {useParams} from "react-router-dom";
 import {FaRegStar, FaStar} from 'react-icons/fa';
 import ReviewComponent from "../Review/ReviewComponent";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import ListGroup from "react-bootstrap/ListGroup";
+import RatingsComponent from "../UserRating/UserRatingComponent";
+import Container from "react-bootstrap/Container";
 
 const MoviePage = () => {
     const {imdbId} = useParams();
@@ -241,47 +246,49 @@ const MoviePage = () => {
     }
 
     return (
-        <div className="container">
-            <div className="row">
-                <div className="col-3">
+        <Container>
+            <Row>
+                <Col md={4}>
                     <img src={movie.imageURL} alt={movie.title} className="img-fluid" width="100%" height="auto"/>
-                </div>
-                <div className="col">
+                </Col>
+                <Col md={8}>
                     <h1>{movie.title}</h1>
                     {movie.originalTitle && <h2 className="text-muted">movie.originalTitle</h2>}
-                    <p>{movie.plot}</p>
-                    {renderStars()}
-                    <p>
-                        IMDb Rating: <span className="badge bg-warning text-dark">{movie.imdbRating}</span> ●
-                        Rating votes: {movie.imdbRatingVotes}
-                    </p>
-                    {renderUserRatings()}
-                    {movie.genres && (
-                        <>
-                            <br/>
-                            Genres: {movie.genres.map(genre => (<span className="badge bg-dark">genre</span>))}
+                    <ListGroup variant="flush">
+                        <ListGroup.Item>{movie.plot}</ListGroup.Item>
+                        <ListGroup.Item>
+                            <p>
+                                IMDb Rating: <span className="badge bg-warning text-dark">{movie.imdbRating}</span> ●
+                                Rating votes: {movie.imdbRatingVotes}
+                            </p>
+                        </ListGroup.Item>
+                        <RatingsComponent itemId={imdbId} itemType="MOVIE"></RatingsComponent>
+                        {movie.genres && movie.directors.size !== 0 && (
+                            <ListGroup.Item>
+                                <br/>
+                                Genres: {movie.genres.map(genre => (<span className="badge bg-dark">{genre}</span>))}
 
-                        </>
-                    )}
-                    {movie.directors && (
-                        <>
-                            <br/>
-                            Directors: {movie.directors.join(' | ')}
-                        </>
-                    )}
-                    {movie.writers && (
-                        <>
-                            <br/>
-                            Directors: {movie.writers.join(' | ')}
-                        </>
-                    )}
-                </div>
-            </div>
-
-            <ReviewComponent imdbId={imdbId}></ReviewComponent>
-
-
-        </div>
+                            </ListGroup.Item>
+                        )}
+                        {movie.directors && movie.directors.size !== 0 && (
+                            <ListGroup.Item>
+                                <br/>
+                                Directors: {movie.directors.join(' | ')}
+                            </ListGroup.Item>
+                        )}
+                        {movie.writers && movie.writers.size !== 0 && (
+                            <ListGroup.Item>
+                                <br/>
+                                Writters: {movie.writers.join(' | ')}
+                            </ListGroup.Item>
+                        )}
+                    </ListGroup>
+                </Col>
+            </Row>
+            <Row>
+                <ReviewComponent imdbId={imdbId} itemType="BOOK"></ReviewComponent>
+            </Row>
+        </Container>
     );
 };
 

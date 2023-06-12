@@ -27,7 +27,7 @@ public final class ParseUtil {
 
     public static Set<String> parseStringSet(String s) {
         Set<String> res = new LinkedHashSet<>();
-        if (hasText(s))
+        if (!hasText(s))
             return res;
         res.addAll(List.of(s.split(SPLITTER)));
         return res;

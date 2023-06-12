@@ -57,7 +57,9 @@ const BookInfo = ({itemId}) => {
 
     return (
         <div>
-            <h2>{book.title}</h2>
+            <Link to={`/books/${itemId}`} className="text-decoration-none">
+                <h2>{book.title}</h2>
+            </Link>
             <p>{book.description}</p>
             {/* Render other book information */}
         </div>

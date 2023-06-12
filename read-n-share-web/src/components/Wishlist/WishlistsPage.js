@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
-import WishlistComponent from './Wishlist';
+import WishlistCard from './WishlistCard';
 import 'bootstrap/dist/css/bootstrap.css';
+import './WishlistCard.css';
+import FloatingActionButton from "../Buttons/FloatingActionButton";
 
 export default function WishlistsPage({wishlistUri}) {
     localStorage.getItem('token');
@@ -35,13 +37,15 @@ export default function WishlistsPage({wishlistUri}) {
     return (
         <>
             <div className="container">
-                {responseData ? (
-                    responseData.map((wishlist) => <WishlistComponent key={wishlist.id} wishlist={wishlist}/>)
-                ) : (
-                    <p>Loading...</p>
-                )}
+                <div className="wishlist-grid">
+                    {responseData ? (
+                        responseData.map((wishlist) => <WishlistCard key={wishlist.id} wishlist={wishlist}/>)
+                    ) : (
+                        <p>Loading...</p>
+                    )}
+                </div>
             </div>
-            <button onClick={handleCreateWishlist} className="btn btn-primary">Create New Wishlist</button>
+            <FloatingActionButton onClick={handleCreateWishlist}/>
         </>
     );
 }

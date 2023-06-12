@@ -1,6 +1,7 @@
 import {useState} from "react";
 import axios from 'axios';
-import {Button, Modal} from 'react-bootstrap';
+import {Button, Modal, Spinner} from 'react-bootstrap';
+import "./SearchItemComponent.css";
 
 const SearchItemComponent = ({searchUrl, SearchResultComponent, handleAddItem, showModal, setShowModal}) => {
     const [expression, setExpression] = useState('');
@@ -44,23 +45,28 @@ const SearchItemComponent = ({searchUrl, SearchResultComponent, handleAddItem, s
     };
 
     return (
-
-        <Modal show={showModal} onHide={handleCloseModal} className=" modal-lg">
+        <Modal show={showModal} onHide={handleCloseModal} className="modal-lg">
             <Modal.Header closeButton>
                 <Modal.Title>Search Item</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <div>
+                <div className="input-group">
                     <input
                         type="text"
                         value={expression}
                         onChange={(e) => setExpression(e.target.value)}
+                        className="form-control"
+                        placeholder="Search..."
                     />
                     <button className="btn btn-primary" onClick={handleSearch}>
                         Search
                     </button>
                 </div>
-                {loading && <p>Loading...</p>}
+                {loading && (
+                    <div className="loading-spinner">
+                        <Spinner animation="border" variant="primary"/>
+                    </div>
+                )}
                 {error && <p>{error}</p>}
                 {searchResults.length > 0 && (
                     <div>

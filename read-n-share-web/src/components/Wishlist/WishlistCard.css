@@ -1,0 +1,23 @@
+.wishlist-card {
+    text-decoration: none;
+}
+
+.wishlist-card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+}
+
+.wishlist-card:active {
+    transform: scale(0.95);
+    transition: transform 0.3s ease-in-out;
+}
+
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.wishlist-card-content {
+    /* Add any additional styling for the card content here */
+}
