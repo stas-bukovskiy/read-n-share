@@ -17,7 +17,7 @@ const BookPage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch(`http://localhost:8080/api/v1/books/${googleBooksId}`, {
+        fetch(`http://3.85.229.215:8080/api/v1/books/${googleBooksId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -25,7 +25,7 @@ const BookPage = () => {
             .then(response => response.json())
             .then(data => {
                 setBook(data);
-                fetch(`http://localhost:8082/api/v1/ratings/${data.id}`, {
+                fetch(`http://3.85.229.215:8082/api/v1/ratings/${data.id}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -33,7 +33,7 @@ const BookPage = () => {
                     .then(response => response.json())
                     .then(ratingData => {
                         setRating(ratingData);
-                        fetch(`http://localhost:8001/api/v1/users?id=${ratingData.itemId}`, {
+                        fetch(`http://3.85.229.215:8001/api/v1/users?id=${ratingData.itemId}`, {
                             headers: {
                                 Authorization: `Bearer ${token}`
                             }

@@ -25,15 +25,21 @@ function NavBar() {
         <li>
           <Link to="/books">Books</Link>
         </li>
+        <li>
+          <Link to="/wishlist/movie">Movie wishlists</Link>
+        </li>
+        <li>
+          <Link to="/wishlist/book">Book wishlists</Link>
+        </li>
         {!token ? (
-          <>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
-            <li>
-              <Link to="/register">Register</Link>
-            </li>
-          </>
+            <>
+              <li>
+                <Link to="/login">Login</Link>
+              </li>
+              <li>
+                <Link to="/register">Register</Link>
+              </li>
+            </>
         ) : (
           <li>
             <button className="logout-button" onClick={handleLogout}>Logout</button>

@@ -12,10 +12,10 @@ function LinksListModal({closeModal, bookId}) {
     const fetchLinks = async () => {
 
       async function getShareLinks(bookId) {
-        const bookDetailsResponse = await fetch(`http://localhost:8002/api/v1/book/share-link/list?book_id=${bookId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
+        const bookDetailsResponse = await fetch(`http://3.85.229.215:8002/api/v1/book/share-link/list?book_id=${bookId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
         });
 
         if (!bookDetailsResponse.ok) {
@@ -51,12 +51,12 @@ function LinksListModal({closeModal, bookId}) {
 
   async function deleteShareLink(linkId) {
     const token = localStorage.getItem('token');
-    return await fetch(`http://localhost:8002/api/v1/book/share-link/${linkId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      method: 'DELETE',
-    });
+      return await fetch(`http://3.85.229.215:8002/api/v1/book/share-link/${linkId}`, {
+          headers: {
+              'Authorization': `Bearer ${token}`
+          },
+          method: 'DELETE',
+      });
   }
 
   const handleCopyClick = (id) => async () => {

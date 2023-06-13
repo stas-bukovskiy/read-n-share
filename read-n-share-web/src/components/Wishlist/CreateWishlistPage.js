@@ -8,6 +8,7 @@ import {BackButton, NextButton} from "../Buttons/Buttons"; // Import your custom
 import "./CreateWishlistPage.css";
 import FloatingActionButton from "../Buttons/FloatingActionButton";
 import {BookAddedItem, MovieAddedItem} from "../ItemSearch/AddedItem";
+import {Spinner} from "react-bootstrap";
 
 
 const StepProgressBar = ({currentStep}) => {
@@ -43,6 +44,13 @@ const CreateWishlistPage = () => {
     const [success, setSuccess] = useState(false);
     const [error, setError] = useState('');
 
+    const handleItemTypeChange = (newItemType) => {
+        if (newItemType !== itemType) {
+            setItemIds([]);
+            setItems([])
+        }
+        setItemType(newItemType)
+    };
 
     const handleAddItemButtonClick = (event) => {
         event.preventDefault();
@@ -96,7 +104,7 @@ const CreateWishlistPage = () => {
         const token = localStorage.getItem('token');
         // Send the POST request
         axios
-            .post('http://localhost:8081/api/v1/wishlists', wishlistData, {
+            .post('http://3.85.229.215:8081/api/v1/wishlists', wishlistData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -121,7 +129,7 @@ const CreateWishlistPage = () => {
             });
     };
 
-    const isStepOneNextDisabled = title.trim() === '' || wishlistType === '';
+    const isStepOneNextDisabled = title.trim() === '' || wishlistType === '' || description.trim() === "";
 
     const renderStepOne = () => (
         <div className="container-fluid d-flex align-items-center justify-content-center vh-100">
@@ -203,7 +211,7 @@ const CreateWishlistPage = () => {
                                 className="big-square-button"
                                 style={{backgroundColor: '#FFA500'}}
                                 onClick={() => {
-                                    setItemType('MOVIE');
+                                    handleItemTypeChange('MOVIE');
                                     setStep(3);
                                 }}
                             >
@@ -214,7 +222,7 @@ const CreateWishlistPage = () => {
                             <button
                                 className="big-square-button" style={{backgroundColor: '#00BFFF'}}
                                 onClick={() => {
-                                    setItemType('BOOK');
+                                    handleItemTypeChange('BOOK');
                                     setStep(3);
                                 }}
                             >
@@ -233,8 +241,9 @@ const CreateWishlistPage = () => {
 
 
     const renderStepThree = () => (
-        <div className="container-fluid d-flex align-items-center justify-content-center vh-100">
-            <div className="form-wrapper">
+        <div className="container-sm mt-5 pt-5 d-flex justify-content-center">
+            <div className="form-wrapper"
+                 style={{width: "80%"}}>
                 <h2 className="my-4">Add items</h2>
                 <StepProgressBar currentStep={step}/>
 
@@ -245,8 +254,8 @@ const CreateWishlistPage = () => {
                 <SearchItemComponent
                     searchUrl={
                         itemType === 'BOOK'
-                            ? 'http://localhost:8080/api/v1/books/search'
-                            : 'http://localhost:8080/api/v1/movies/search'
+                            ? 'http://3.85.229.215:8080/api/v1/books/search'
+                            : 'http://3.85.229.215:8080/api/v1/movies/search'
                     }
                     SearchResultComponent={
                         itemType === 'BOOK' ? BookSearchResultComponent : MovieSearchResultComponent
@@ -268,7 +277,11 @@ const CreateWishlistPage = () => {
                         Submit
                     </button>
                     <div>
-                        {loading && <p>Loading...</p>}
+                        {loading &&
+                            <div className="loading-spinner">
+                                <Spinner animation="border" variant="primary"/>
+                            </div>
+                        }
                         {success && <p>Form submitted successfully!</p>}
                         {error && <p>Error: {error}</p>}
                     </div>

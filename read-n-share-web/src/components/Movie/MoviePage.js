@@ -24,7 +24,7 @@ const MoviePage = () => {
 
     const fetchItemRating = async () => {
         try {
-            const response = await axios.get(`http://localhost:8082/api/v1/ratings/${imdbId}`, {
+            const response = await axios.get(`http://3.85.229.215:8082/api/v1/ratings/${imdbId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -43,7 +43,7 @@ const MoviePage = () => {
         const fetchMovie = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8080/api/v1/movies/${imdbId}`,
+                    `http://3.85.229.215:8080/api/v1/movies/${imdbId}`,
                     {
                         headers: {Authorization: `Bearer ${token}`}
                     }
@@ -60,7 +60,7 @@ const MoviePage = () => {
         const fetchReviews = async () => {
             try {
                 const response = await axios.get(
-                    `http://localhost:8082/api/v1/reviews/${imdbId}`,
+                    `http://3.85.229.215:8082/api/v1/reviews/${imdbId}`,
                     {
                         headers: {Authorization: `Bearer ${token}`}
                     }
@@ -73,7 +73,7 @@ const MoviePage = () => {
 
         const fetchUserRating = async () => {
             try {
-                const response = await axios.get(`http://localhost:8082/api/v1/ratings/my/${imdbId}`, {
+                const response = await axios.get(`http://3.85.229.215:8082/api/v1/ratings/my/${imdbId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -97,7 +97,7 @@ const MoviePage = () => {
     const handleRatingChange = async (newRating) => {
         try {
             const response = await axios.post(
-                'http://localhost:8082/api/v1/ratings',
+                'http://3.85.229.215:8082/api/v1/ratings',
                 {
                     itemId: imdbId,
                     rating: newRating,
@@ -147,7 +147,7 @@ const MoviePage = () => {
 
     const handleUnrate = async () => {
             await axios
-                .delete(`http://localhost:8082/api/v1/ratings/${imdbId}`,
+                .delete(`http://3.85.229.215:8082/api/v1/ratings/${imdbId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -176,7 +176,7 @@ const MoviePage = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:8082/api/v1/reviews/${imdbId}`,
+                `http://3.85.229.215:8082/api/v1/reviews/${imdbId}`,
                 reviewForm,
                 {
                     headers: {Authorization: `Bearer ${token}`}
@@ -191,7 +191,7 @@ const MoviePage = () => {
 
     const handleRemoveReview = async (reviewId) => {
         try {
-            await axios.delete(`http://localhost:8082/api/v1/reviews/${reviewId}`, {
+            await axios.delete(`http://3.85.229.215:8082/api/v1/reviews/${reviewId}`, {
                 headers: {Authorization: `Bearer ${token}`}
             });
             setReviews((prevReviews) =>
