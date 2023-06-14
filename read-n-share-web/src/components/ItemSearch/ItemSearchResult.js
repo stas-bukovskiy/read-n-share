@@ -34,10 +34,11 @@ export const BookSearchResultComponent = ({results, handleAddItem}) => {
             {results.map((result) => (
                 <div key={result.goggleBooksId} className="col-md-4 mb-4">
                     <div className="card">
-                        <img src={result.image} alt={result.title} className="card-img-top"/>
+                        <img src={result.imageLinks.smallThumbnail || result.imageLinks.thumbnail} alt={result.title}
+                             className="card-img-top"/>
                         <div className="card-body">
                             <h4 className="card-title">{result.title}</h4>
-                            <p className="card-text">{result.description}</p>
+                            <p className="card-text">{result.subtitle}</p>
                             <button
                                 className="btn btn-primary"
                                 onClick={(event) => {

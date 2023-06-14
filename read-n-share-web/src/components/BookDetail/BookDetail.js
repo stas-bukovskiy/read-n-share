@@ -59,7 +59,7 @@ function BookDetail() {
     const token = localStorage.getItem('token');
 
     if (!socket.current) {
-      socket.current = new WebSocket("ws://localhost:8002/api/v1/ws/reader?auth=" + token + "&bookID=" + id);
+      socket.current = new WebSocket("ws://3.85.229.215:8002/api/v1/ws/reader?auth=" + token + "&bookID=" + id);
 
       socket.current.onopen = () => {
         console.log("ws opened");
@@ -121,11 +121,11 @@ function BookDetail() {
     }
 
     const fetchData = async () => {
-      const bookDetailsResponse = await fetch(`http://localhost:8002/api/v1/book/${id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+        const bookDetailsResponse = await fetch(`http://3.85.229.215:8002/api/v1/book/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
       if (!bookDetailsResponse.ok) {
         console.error('Failed to fetch book details');
@@ -136,11 +136,11 @@ function BookDetail() {
       setUserBook(bookData.book);
       setUserId(bookData.userId);
 
-      const bookUrlResponse = await fetch(`http://localhost:8002/api/v1/book/${id}/url`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+        const bookUrlResponse = await fetch(`http://3.85.229.215:8002/api/v1/book/${id}/url`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
       if (!bookUrlResponse.ok) {
         console.error('Failed to fetch book URL');
@@ -150,11 +150,11 @@ function BookDetail() {
       const urlData = await bookUrlResponse.json();
       setUrl(urlData.url);
 
-      const bookUserSettingsResponse = await fetch(`http://localhost:8002/api/v1/book/${id}/settings`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+        const bookUserSettingsResponse = await fetch(`http://3.85.229.215:8002/api/v1/book/${id}/settings`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
 
       if (!bookUserSettingsResponse.ok) {
         console.error('Failed to fetch book user settings');

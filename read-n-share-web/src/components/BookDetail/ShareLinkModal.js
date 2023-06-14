@@ -12,15 +12,15 @@ function ShareLinkModal({closeModal, bookId}) {
     e.preventDefault();
 
     async function createShareLink(bookId, days) {
-      const createLinkResponse = await fetch(`http://localhost:8002/api/v1/book/share-link/`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          book_id: bookId,
-          expires_in: days * 24 * 60 * 60,
-        }),
+      const createLinkResponse = await fetch(`http://3.85.229.215:8002/api/v1/book/share-link/`, {
+          headers: {
+              'Authorization': `Bearer ${token}`
+          },
+          method: 'POST',
+          body: JSON.stringify({
+              book_id: bookId,
+              expires_in: days * 24 * 60 * 60,
+          }),
       });
 
       if (!createLinkResponse.ok) {

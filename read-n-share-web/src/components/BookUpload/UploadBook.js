@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Navigate, useNavigate} from 'react-router-dom';
+import {Navigate} from 'react-router-dom';
 import './UploadBook.css';
 import {FileUploader} from "react-drag-drop-files";
 
@@ -48,12 +48,12 @@ function UploadBook() {
       setMessage('Uploading...');
       setMessageStatus('info');
 
-      const response = await fetch('http://localhost:8002/api/v1/upload/book', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+      const response = await fetch('http://3.85.229.215:8002/api/v1/upload/book', {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
       });
 
       console.log(response)

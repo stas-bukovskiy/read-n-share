@@ -13,7 +13,7 @@ const RatingsComponent = ({itemId, itemType}) => {
 
     const fetchItemRating = async () => {
         try {
-            const response = await axios.get(`http://localhost:8082/api/v1/ratings/${itemId}`, {
+            const response = await axios.get(`http://3.85.229.215:8082/api/v1/ratings/${itemId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -31,7 +31,7 @@ const RatingsComponent = ({itemId, itemType}) => {
     useEffect(() => {
         const fetchUserRating = async () => {
             try {
-                const response = await axios.get(`http://localhost:8082/api/v1/ratings/my/${itemId}`, {
+                const response = await axios.get(`http://3.85.229.215:8082/api/v1/ratings/my/${itemId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -56,7 +56,7 @@ const RatingsComponent = ({itemId, itemType}) => {
     const handleRatingChange = async (newRating) => {
         try {
             const response = await axios.post(
-                'http://localhost:8082/api/v1/ratings',
+                'http://3.85.229.215:8082/api/v1/ratings',
                 {
                     itemId: itemId,
                     rating: newRating,
@@ -80,7 +80,7 @@ const RatingsComponent = ({itemId, itemType}) => {
 
     const handleUnrate = async () => {
             await axios
-                .delete(`http://localhost:8082/api/v1/ratings/${itemId}`,
+                .delete(`http://3.85.229.215:8082/api/v1/ratings/${itemId}`,
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,

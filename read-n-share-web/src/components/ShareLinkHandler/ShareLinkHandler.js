@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, {useEffect} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 
 function ShareLinkHandler() {
   const { id, linkID } = useParams();
@@ -7,11 +7,11 @@ function ShareLinkHandler() {
 
   useEffect(() => {
     const fetchLink = async () => {
-      const response = await fetch(`http://localhost:8002/api/v1/book/share-link/${linkID}/share`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        method: 'POST',
+      const response = await fetch(`http://3.85.229.215:8002/api/v1/book/share-link/${linkID}/share`, {
+          headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          method: 'POST',
       });
 
       if (!response.ok) {

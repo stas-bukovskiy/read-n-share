@@ -1,0 +1,15 @@
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    margin: 20px 0;
+}
+
+.animated-card {
+    transition: transform 0.3s ease-in-out;
+}
+
+.animated-card:hover {
+    transform: scale(1.05);
+}

@@ -14,10 +14,10 @@ function BookList() {
 
   const fetchBooks = async () => {
     try {
-      const response = await fetch('http://localhost:8002/api/v1/book/list', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+      const response = await fetch('http://3.85.229.215:8002/api/v1/book/list', {
+          headers: {
+              'Authorization': `Bearer ${token}`
+          }
       });
 
       if (response.ok) {

@@ -18,7 +18,7 @@ const ReviewComponent = ({imdbId}) => {
 
     useEffect(() => {
         const fetchCurrentUserId = async () => {
-            const response = await axios.get(`http://localhost:8001/api/v1/auth/verify?token=${token}`);
+            const response = await axios.get(`http://3.85.229.215:8001/api/v1/auth/verify?token=${token}`);
             if (response.status.valueOf() === 200) {
                 setCurrentUserId(response.data.user.id);
             }
@@ -31,7 +31,7 @@ const ReviewComponent = ({imdbId}) => {
     const fetchReviews = async () => {
         try {
             setIsLoadingReviews(true);
-            const response = await axios.get(`http://localhost:8082/api/v1/reviews/my/${imdbId}`, {
+            const response = await axios.get(`http://3.85.229.215:8082/api/v1/reviews/my/${imdbId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -63,7 +63,7 @@ const ReviewComponent = ({imdbId}) => {
 
     const getUsername = async (userId) => {
         try {
-            const response = await axios.get(`http://localhost:8001/api/v1/users?id=${userId}`);
+            const response = await axios.get(`http://3.85.229.215:8001/api/v1/users?id=${userId}`);
             return response.data.user.username;
         } catch (error) {
             console.log('Error fetching username:', error);
@@ -85,7 +85,7 @@ const ReviewComponent = ({imdbId}) => {
         setIsLoadingEdit(true);
         try {
             const response = await axios.put(
-                `http://localhost:8082/api/v1/reviews/${editingReviewId}`,
+                `http://3.85.229.215:8082/api/v1/reviews/${editingReviewId}`,
                 {
                     review: editingReviewText,
                 },
@@ -109,7 +109,7 @@ const ReviewComponent = ({imdbId}) => {
 
     const handleDeleteReview = async (id) => {
         try {
-            const response = await axios.delete(`http://localhost:8082/api/v1/reviews/${id}`, {
+            const response = await axios.delete(`http://3.85.229.215:8082/api/v1/reviews/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -127,7 +127,7 @@ const ReviewComponent = ({imdbId}) => {
         setIsLoadingSubmit(true);
         try {
             const response = await axios.post(
-                'http://localhost:8082/api/v1/reviews',
+                'http://3.85.229.215:8082/api/v1/reviews',
                 {
                     itemId: imdbId,
                     review: reviewText,
@@ -231,7 +231,7 @@ export default ReviewComponent;
 //
 // useEffect(() => {
 //     const fetchCurrentUserId = async () => {
-//         const response = await axios.get(`http://localhost:8001/api/v1/auth/verify?token=${token}`);
+//         const response = await axios.get(`http://3.85.229.215:8001/api/v1/auth/verify?token=${token}`);
 //         if (response.status.valueOf() === 200) {
 //             setCurrentUserId(response.data.user.id);
 //         }

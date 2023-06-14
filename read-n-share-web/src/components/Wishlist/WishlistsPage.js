@@ -5,6 +5,8 @@ import WishlistCard from './WishlistCard';
 import 'bootstrap/dist/css/bootstrap.css';
 import './WishlistCard.css';
 import FloatingActionButton from "../Buttons/FloatingActionButton";
+import "../../css/styles.css";
+import {Spinner} from "react-bootstrap";
 
 export default function WishlistsPage({wishlistUri}) {
     localStorage.getItem('token');
@@ -19,7 +21,7 @@ export default function WishlistsPage({wishlistUri}) {
         try {
             const token = localStorage.getItem('token');
             console.log(wishlistUri);
-            const response = await axios.get(`http://localhost:8081/api/v1/wishlists` + wishlistUri, {
+            const response = await axios.get(`http://3.85.229.215:8081/api/v1/wishlists` + wishlistUri, {
                 headers: {
                     Authorization: `Bearer ${token}`, // Include bearer token in the headers
                 },
@@ -41,7 +43,9 @@ export default function WishlistsPage({wishlistUri}) {
                     {responseData ? (
                         responseData.map((wishlist) => <WishlistCard key={wishlist.id} wishlist={wishlist}/>)
                     ) : (
-                        <p>Loading...</p>
+                        <div className="loading-spinner">
+                            <Spinner animation="border" variant="primary"/>
+                        </div>
                     )}
                 </div>
             </div>

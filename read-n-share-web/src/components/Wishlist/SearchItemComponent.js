@@ -1,7 +1,7 @@
 import {useState} from "react";
 import axios from 'axios';
 import {Button, Modal, Spinner} from 'react-bootstrap';
-import "./SearchItemComponent.css";
+import "../../css/styles.css";
 
 const SearchItemComponent = ({searchUrl, SearchResultComponent, handleAddItem, showModal, setShowModal}) => {
     const [expression, setExpression] = useState('');
@@ -55,7 +55,7 @@ const SearchItemComponent = ({searchUrl, SearchResultComponent, handleAddItem, s
                         type="text"
                         value={expression}
                         onChange={(e) => setExpression(e.target.value)}
-                        className="form-control"
+                        className="form-control "
                         placeholder="Search..."
                     />
                     <button className="btn btn-primary" onClick={handleSearch}>
@@ -69,8 +69,7 @@ const SearchItemComponent = ({searchUrl, SearchResultComponent, handleAddItem, s
                 )}
                 {error && <p>{error}</p>}
                 {searchResults.length > 0 && (
-                    <div>
-                        <h3>Search Results:</h3>
+                    <div className="my-3">
                         <SearchResultComponent results={searchResults} handleAddItem={handleAddItem}/>
                     </div>
                 )}

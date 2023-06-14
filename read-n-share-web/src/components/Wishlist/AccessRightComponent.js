@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Button, Modal, Spinner, Table} from 'react-bootstrap';
+import FloatingActionButton from "../Buttons/FloatingActionButton";
 
 const AccessRightsComponent = ({wishlistId}) => {
     const [accessRights, setAccessRights] = useState([]);
@@ -16,7 +17,7 @@ const AccessRightsComponent = ({wishlistId}) => {
         const fetchAccessRights = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:8081/api/v1/wishlists/${wishlistId}/access-rights`, {
+                const response = await fetch(`http://3.85.229.215:8081/api/v1/wishlists/${wishlistId}/access-rights`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -47,7 +48,7 @@ const AccessRightsComponent = ({wishlistId}) => {
 
     const fetchUsername = async (userId) => {
         try {
-            const response = await fetch(`http://localhost:8001/api/v1/users?id=${userId}`, {
+            const response = await fetch(`http://3.85.229.215:8001/api/v1/users?id=${userId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -78,7 +79,7 @@ const AccessRightsComponent = ({wishlistId}) => {
     const handleAddAccessRight = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8001/api/v1/users?username=${username}`, {
+            const response = await fetch(`http://3.85.229.215:8001/api/v1/users?username=${username}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -88,7 +89,7 @@ const AccessRightsComponent = ({wishlistId}) => {
                 const {id: userId} = data.user;
 
                 // Add the access right using POST request
-                const addAccessRightResponse = await fetch(`http://localhost:8081/api/v1/wishlists/${wishlistId}/access-rights`, {
+                const addAccessRightResponse = await fetch(`http://3.85.229.215:8081/api/v1/wishlists/${wishlistId}/access-rights`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ const AccessRightsComponent = ({wishlistId}) => {
         setLoading(true);
         try {
             const deleteAccessRightResponse = await fetch(
-                `http://localhost:8081/api/v1/wishlists/${wishlistId}/access-rights/${accessRight.userId}`,
+                `http://3.85.229.215:8081/api/v1/wishlists/${wishlistId}/access-rights/${accessRight.userId}`,
                 {
                     method: 'DELETE',
                     headers: {
@@ -164,7 +165,8 @@ const AccessRightsComponent = ({wishlistId}) => {
 
     return (
         <div>
-            <Button variant="primary" onClick={handleShowModal}>Add new</Button>
+
+            <FloatingActionButton onClick={handleShowModal}></FloatingActionButton>
 
             <Table striped bordered hover>
                 <thead>
@@ -180,10 +182,13 @@ const AccessRightsComponent = ({wishlistId}) => {
                         <td>{accessRight.username}</td>
                         <td>{accessRight.permission}</td>
                         <td>
-                            <Button variant="primary" onClick={() => handleEditAccessRight(accessRight)}>
+                            <Button variant="primary"
+                                    disabled={accessRight.permission === "OWNER"}
+                                    onClick={() => handleEditAccessRight(accessRight)}>
                                 Edit
                             </Button>{' '}
                             <Button variant="danger"
+                                    disabled={accessRight.permission === "OWNER"}
                                     onClick={() => handleDeleteAccessRight(accessRight)}>Delete</Button>
                         </td>
                     </tr>
@@ -197,16 +202,16 @@ const AccessRightsComponent = ({wishlistId}) => {
                     <Modal.Title>{selectedUserId ? 'Edit' : 'Add'} Access Right</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {/* Username input */}
                     <input
+                        className="form-control mb-4"
                         type="text"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         disabled={selectedUserId !== null}
                     />
 
-                    {/* Permission select */}
                     <select
+                        className="form-control form-select"
                         value={permission}
                         onChange={(e) => setPermission(e.target.value)}
                     >
@@ -222,7 +227,11 @@ const AccessRightsComponent = ({wishlistId}) => {
                 </Modal.Footer>
             </Modal>
 
-            {loading && <Spinner animation="border"/>}
+            {loading && (
+                <div className="loading-spinner">
+                    <Spinner animation="border" variant="primary"/>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import './FloatingActionButton.css';
+import './FloatingButton.css';
 
 const FloatingActionButton = ({onClick}) => {
     return (
